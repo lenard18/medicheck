@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0A4D5C" />
+  <title>Sin conexión — MediCheck</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #FBFAF6;
+      color: #0F1F2E;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* Fondo grilla sutil */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(10,77,92,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(10,77,92,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border: 1.5px solid #E8E4DA;
+      border-radius: 20px;
+      padding: 3rem 2.5rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 4px 16px rgba(10,77,92,0.09), 0 8px 32px rgba(10,77,92,0.06);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Borde superior petróleo */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #0A4D5C, #14797A, #8BBFB0);
+      border-radius: 20px 20px 0 0;
+    }
+
+    /* Logo */
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      margin-bottom: 2rem;
+    }
+    .logo-mark {
+      width: 40px; height: 40px;
+      background: #0A4D5C;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(10,77,92,0.25);
+    }
+    .logo-text {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #0F1F2E;
+      letter-spacing: -0.02em;
+    }
+    .logo-text span { color: #14797A; }
+
+    /* Ícono principal */
+    .offline-ico {
+      font-size: 4rem;
+      margin-bottom: 1.25rem;
+      display: block;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50%       { transform: scale(0.95); opacity: 0.7; }
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #0F1F2E;
+      margin-bottom: 0.6rem;
+      letter-spacing: -0.02em;
+    }
+
+    p {
+      font-size: 0.88rem;
+      color: #5C6B7A;
+      line-height: 1.6;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Lo que SÍ puedes ver offline */
+    .disponible {
+      background: #EBF5F1;
+      border: 1.5px solid #C4DFD4;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+    .disponible-titulo {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #8BBFB0;
+      margin-bottom: 0.6rem;
+    }
+    .disponible-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.84rem;
+      color: #0A4D5C;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+    .disponible-item:last-child { margin-bottom: 0; }
+
+    /* Botones */
+    .btn-retry {
+      width: 100%;
+      padding: 0.75rem;
+      background: #0A4D5C;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      margin-bottom: 0.65rem;
+    }
+    .btn-retry:hover  { background: #0D6175; }
+    .btn-retry:active { transform: scale(0.98); }
+
+    .btn-back {
+      width: 100%;
+      padding: 0.65rem;
+      background: none;
+      border: 1.5px solid #E8E4DA;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      color: #5C6B7A;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-back:hover { border-color: #8BBFB0; color: #0A4D5C; }
+
+    /* Estado de conexión */
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      color: #8A9BB0;
+      margin-top: 1.25rem;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #D14545;
+      animation: blink 1.5s ease infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.3; }
+    }
+    .dot.online { background: #2D8B5F; animation: none; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+
+    <div class="logo">
+      <div class="logo-mark">🩺</div>
+      <div class="logo-text">Medi<span>Check</span></div>
+    </div>
+
+    <span class="offline-ico">📡</span>
+
+    <h1>Sin conexión</h1>
+    <p>No hay internet disponible en este momento. Algunas secciones que ya visitaste siguen disponibles.</p>
+
+    <div class="disponible">
+      <div class="disponible-titulo">✓ Disponible sin internet</div>
+      <div class="disponible-item">📋 Historial de consultas (última visita)</div>
+      <div class="disponible-item">💊 Mis recetas guardadas</div>
+      <div class="disponible-item">📊 Dashboard principal</div>
+    </div>
+
+    <button class="btn-retry" onclick="reintentar()">
+      🔄 Reintentar conexión
+    </button>
+    <button class="btn-back" onclick="history.back()">
+      ← Volver atrás
+    </button>
+
+    <div class="status-dot">
+      <span class="dot" id="dot"></span>
+      <span id="status-txt">Sin conexión a internet</span>
+    </div>
+
+  </div>
+
+  <script>
+    // Detectar cuando vuelve la conexión
+    function checkConnection() {
+      const dot = document.getElementById('dot');
+      const txt = document.getElementById('status-txt');
+      if (navigator.onLine) {
+        dot.classList.add('online');
+        txt.textContent = 'Conexión restaurada — recargando...';
+        setTimeout(() => location.replace('/dashboard'), 1200);
+      }
+    }
+
+    window.addEventListener('online', checkConnection);
+
+    function reintentar() {
+      if (navigator.onLine) {
+        location.replace('/dashboard');
+      } else {
+        const btn = event.target;
+        btn.textContent = '⚠ Sin internet todavía...';
+        setTimeout(() => { btn.textContent = '🔄 Reintentar conexión'; }, 2000);
+      }
+    }
+
+    // Verificar al cargar
+    checkConnection();
+  </script>
+
+</body>
+</html>
