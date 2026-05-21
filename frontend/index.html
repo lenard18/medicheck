@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!-- ── Identidad básica ─────────────────────────────────────── -->
+    <title>MediCheck IA</title>
+    <meta name="description" content="MediCheck IA — Consultas médicas inteligentes, historial clínico y teleconsultas en un solo lugar" />
+    <meta name="keywords" content="telemedicina, consulta médica, IA, salud, Colombia" />
+    <meta name="author" content="MediCheck" />
+
+    <!-- ── Colores del tema (barra del navegador en Android) ─────── -->
+    <meta name="theme-color" content="#0A4D5C" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#0A4D5C" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)"  content="#0A4D5C" />
+    <meta name="msapplication-navbutton-color" content="#0A4D5C" />
+
+    <!-- ── PWA Manifest ──────────────────────────────────────────── -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- ── Íconos ────────────────────────────────────────────────── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png" />
+
+    <!-- ── Apple / iOS ───────────────────────────────────────────── -->
+    <!-- Habilita el modo "app instalada" en iPhone -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- Barra de estado negra translúcida (respeta el notch) -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- Nombre que aparece bajo el ícono en iPhone -->
+    <meta name="apple-mobile-web-app-title" content="MediCheck" />
+    <!-- Ícono para la pantalla de inicio de iPhone -->
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512.png" />
+
+    <!-- ── Open Graph (cuando compartes el link en WhatsApp, etc.) ── -->
+    <meta property="og:type"        content="website" />
+    <meta property="og:title"       content="MediCheck IA" />
+    <meta property="og:description" content="Consultas médicas inteligentes, historial clínico y teleconsultas" />
+    <meta property="og:image"       content="/icons/icon-512.png" />
+    <meta property="og:locale"      content="es_CO" />
+
+    <!-- ── Twitter/X Card ────────────────────────────────────────── -->
+    <meta name="twitter:card"  content="summary" />
+    <meta name="twitter:title" content="MediCheck IA" />
+    <meta name="twitter:image" content="/icons/icon-512.png" />
+
+    <!-- ── Seguridad ─────────────────────────────────────────────── -->
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+
+    <!-- ══════════════════════════════════════════════════════════
+         REGISTRO DEL SERVICE WORKER
+         - En producción: lo registra normalmente
+         - En localhost (desarrollo): lo desregistra para evitar
+           que la caché rompa el hot-reload de Vite
+    ═══════════════════════════════════════════════════════════ -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+          // DESARROLLO: desregistrar SW para no interferir con Vite
+          navigator.serviceWorker.getRegistrations().then(regs => {
+            regs.forEach(reg => {
+              reg.unregister();
+              console.log('[MediCheck] SW desregistrado en dev ✓');
+            });
+          });
+        } else {
+          // PRODUCCIÓN: registrar SW
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+              .then(reg => {
+                console.log('[MediCheck] SW registrado:', reg.scope);
+
+                // Verificar actualizaciones cada 1 hora
+                setInterval(() => reg.update(), 60 * 60 * 1000);
+              })
+              .catch(err => console.warn('[MediCheck] SW error:', err));
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

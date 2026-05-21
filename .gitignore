@@ -1,0 +1,42 @@
+# Credenciales y secretos
+render.env
+render-env-vars.txt
+*.env
+.env*
+
+# Backups de base de datos
+*.sql
+backup_*.sql
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+
+# Android build output
+frontend/android/.gradle/
+frontend/android/app/build/
+frontend/android/build/
+frontend/android/capacitor-cordova-android-plugins/build/
+frontend/android/local.properties
+
+# Java / Spring Boot
+backend/target/
+backend/.gradle/
+backend/*.jar
+
+# IDEs
+.vscode/settings.json
+**/.idea/
+**/*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Claude session files
+.claude/
+
+# Logs
+*.log
+ngrok-bin/

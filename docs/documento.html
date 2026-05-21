@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>MediCheck IA — Documento de Proyecto</title>
+<style>
+  @page { size: A4; margin: 2.5cm 2.5cm 2.5cm 2.5cm; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Calibri',Georgia,serif;font-size:11pt;color:#1a1a2e;background:#fff;line-height:1.6;}
+  .page{max-width:210mm;margin:0 auto;padding:2.5cm;}
+
+  /* Portada */
+  .cover{min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#0a0f14 0%,#111820 50%,#0d1e2b 100%);color:#fff;page-break-after:always;}
+  .cover-logo{width:80px;height:80px;background:linear-gradient(135deg,#00d4aa,#0099ff);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 1.5rem;box-shadow:0 0 40px rgba(0,212,170,.4);}
+  .cover-title{font-size:36pt;font-weight:700;margin-bottom:.5rem;font-family:Georgia,serif;}
+  .cover-title span{color:#00d4aa;}
+  .cover-sub{font-size:14pt;color:#aab;margin-bottom:3rem;}
+  .cover-badges{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3rem;}
+  .cover-badge{background:rgba(0,212,170,.15);border:1px solid rgba(0,212,170,.3);color:#00d4aa;padding:.4rem 1rem;border-radius:20px;font-size:9pt;}
+  .cover-meta{color:#666;font-size:9pt;border-top:1px solid #333;padding-top:1rem;margin-top:auto;}
+
+  /* TOC */
+  .toc-page{page-break-after:always;padding:2.5cm 2.5cm;}
+  .toc-title{font-size:18pt;font-weight:700;color:#1a1a2e;margin-bottom:1.5rem;padding-bottom:.5rem;border-bottom:2px solid #00d4aa;}
+  .toc-item{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px dotted #ddd;font-size:10pt;}
+  .toc-item a{color:#1a1a2e;text-decoration:none;}
+  .toc-item a:hover{color:#00d4aa;}
+  .toc-num{color:#00d4aa;font-weight:700;min-width:30px;}
+  .toc-sub{padding-left:1.5rem;color:#555;}
+
+  /* Content */
+  .content-page{page-break-before:always;padding:0;}
+  h1{font-size:22pt;font-weight:700;color:#0a0f14;margin:2rem 0 1rem;padding-bottom:.5rem;border-bottom:3px solid #00d4aa;}
+  h2{font-size:15pt;font-weight:700;color:#111820;margin:1.5rem 0 .75rem;padding-left:.75rem;border-left:4px solid #00d4aa;}
+  h3{font-size:12pt;font-weight:700;color:#333;margin:1.2rem 0 .5rem;}
+  p{margin-bottom:.75rem;text-align:justify;}
+  ul,ol{margin:.5rem 0 .75rem 1.5rem;}
+  li{margin-bottom:.3rem;}
+
+  /* Tables */
+  table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:9.5pt;}
+  th{background:#0a0f14;color:#00d4aa;padding:.5rem .75rem;text-align:left;font-weight:700;font-size:9pt;letter-spacing:.05em;}
+  td{padding:.45rem .75rem;border-bottom:1px solid #e8e8e8;}
+  tr:nth-child(even) td{background:#f8f9ff;}
+  tr:hover td{background:#f0f5ff;}
+
+  /* Code */
+  code{background:#f0f4f8;border:1px solid #dde;padding:.1rem .4rem;border-radius:4px;font-family:Consolas,monospace;font-size:9pt;color:#c7254e;}
+  pre{background:#0a0f14;color:#e2e8f0;padding:1rem 1.25rem;border-radius:8px;overflow-x:auto;margin:1rem 0;font-family:Consolas,monospace;font-size:9pt;border-left:4px solid #00d4aa;line-height:1.5;}
+  pre code{background:none;border:none;color:#e2e8f0;padding:0;}
+
+  /* Callouts */
+  .callout{border-left:4px solid #00d4aa;background:#f0fdf8;padding:.75rem 1rem;margin:1rem 0;border-radius:0 8px 8px 0;}
+  .callout.warning{border-color:#f59e0b;background:#fffbeb;}
+  .callout.danger{border-color:#ef4444;background:#fef2f2;}
+  .callout-title{font-weight:700;font-size:10pt;margin-bottom:.25rem;}
+
+  /* Badges */
+  .badge{display:inline-block;padding:.15rem .5rem;border-radius:12px;font-size:8pt;font-weight:700;}
+  .badge-get{background:#dcfce7;color:#166534;}
+  .badge-post{background:#dbeafe;color:#1e40af;}
+  .badge-put{background:#fef3c7;color:#92400e;}
+  .badge-del{background:#fee2e2;color:#991b1b;}
+  .badge-admin{background:#f3e8ff;color:#6b21a8;}
+  .badge-paciente{background:#e0f2fe;color:#075985;}
+  .badge-medico{background:#d1fae5;color:#065f46;}
+
+  /* Schema boxes */
+  .schema-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1rem 0;}
+  .schema-box{border:1px solid #dde;border-radius:8px;overflow:hidden;}
+  .schema-header{background:#0a0f14;color:#00d4aa;padding:.5rem .85rem;font-weight:700;font-size:9pt;letter-spacing:.05em;}
+  .schema-body{padding:.5rem 0;}
+  .schema-row{padding:.2rem .85rem;font-size:8.5pt;border-bottom:1px solid #f0f0f0;display:flex;gap:.5rem;}
+  .schema-row:last-child{border-bottom:none;}
+  .schema-pk{color:#f59e0b;font-weight:700;font-size:7.5pt;}
+  .schema-fk{color:#3b82f6;font-weight:700;font-size:7.5pt;}
+  .schema-type{color:#888;font-size:8pt;margin-left:auto;}
+
+  /* Section divider */
+  .divider{height:2px;background:linear-gradient(90deg,#00d4aa,transparent);margin:2rem 0;}
+
+  /* Footer */
+  @media print{
+    .no-print{display:none!important;}
+    body{background:#fff;}
+    .cover,.toc-page,.content-page{page-break-after:always;}
+  }
+  .footer-bar{text-align:center;color:#aaa;font-size:8pt;margin-top:3rem;padding-top:1rem;border-top:1px solid #eee;}
+
+  /* Print button */
+  .print-btn{position:fixed;top:1rem;right:1rem;background:#00d4aa;color:#000;border:none;padding:.6rem 1.2rem;border-radius:8px;cursor:pointer;font-weight:700;font-size:.85rem;z-index:999;box-shadow:0 4px 15px rgba(0,212,170,.4);}
+  .print-btn:hover{background:#00b896;}
+</style>
+</head>
+<body>
+
+<button class="print-btn no-print" onclick="window.print()">🖨 Imprimir / Exportar PDF</button>
+
+<!-- ══════════════════════════════════════════════════════════ PORTADA -->
+<div class="cover">
+  <div class="cover-logo">🩺</div>
+  <div class="cover-title">Medi<span>Check</span> IA</div>
+  <div class="cover-sub">Plataforma de Salud Digital con Inteligencia Artificial</div>
+  <div class="cover-badges">
+    <span class="cover-badge">Spring Boot 3.5</span>
+    <span class="cover-badge">Vue 3 + Vite</span>
+    <span class="cover-badge">PostgreSQL 15</span>
+    <span class="cover-badge">Ollama LLM</span>
+    <span class="cover-badge">JWT Auth</span>
+    <span class="cover-badge">Leaflet Maps</span>
+  </div>
+  <div style="color:#aab;font-size:11pt;max-width:500px;line-height:1.7;margin-bottom:2rem;">
+    Sistema completo de gestión médica con análisis de síntomas por IA, registro y verificación
+    de médicos, asignación geográfica médico-paciente y panel de administración centralizado.
+  </div>
+  <div class="cover-meta">
+    Documento Técnico de Proyecto &nbsp;·&nbsp; MediCheck IA &nbsp;·&nbsp; 2026
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ ÍNDICE -->
+<div class="toc-page">
+  <div class="toc-title">Tabla de Contenido</div>
+  <div class="toc-item"><span><span class="toc-num">1</span><a href="#s-prob">Planteamiento del Problema</a></span><span>2</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-prob-1">1.1 Contexto y problemática</a></span><span>2</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-prob-2">1.2 Necesidades identificadas</a></span><span>2</span></div>
+  <div class="toc-item"><span><span class="toc-num">2</span><a href="#s-que">¿Qué es MediCheck IA?</a></span><span>3</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-que-1">2.1 Definición y propósito</a></span><span>3</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-que-2">2.2 Diferenciación</a></span><span>3</span></div>
+  <div class="toc-item"><span><span class="toc-num">3</span><a href="#s-impacto">Impacto Esperado</a></span><span>4</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-impacto-1">3.1 Impacto para pacientes</a></span><span>4</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-impacto-2">3.2 Impacto para médicos</a></span><span>4</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s-impacto-3">3.3 Impacto en el sistema de salud</a></span><span>4</span></div>
+  <div class="toc-item"><span><span class="toc-num">4</span><a href="#s1">Descripción General del Sistema</a></span><span>5</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s1-1">4.1 Objetivos</a></span><span>5</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s1-2">4.2 Funcionalidades principales</a></span><span>5</span></div>
+  <div class="toc-item"><span><span class="toc-num">5</span><a href="#s2">Stack Tecnológico</a></span><span>6</span></div>
+  <div class="toc-item"><span><span class="toc-num">6</span><a href="#s3">Arquitectura del Sistema</a></span><span>7</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s3-1">6.1 Diagrama de capas</a></span><span>7</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s3-2">6.2 Flujo de consulta con IA</a></span><span>7</span></div>
+  <div class="toc-item"><span><span class="toc-num">7</span><a href="#s4">Requisitos e Instalación</a></span><span>8</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s4-1">7.1 Requisitos previos</a></span><span>8</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s4-2">7.2 Configuración paso a paso</a></span><span>8</span></div>
+  <div class="toc-item"><span><span class="toc-num">8</span><a href="#s5">Variables de Entorno</a></span><span>9</span></div>
+  <div class="toc-item"><span><span class="toc-num">9</span><a href="#s6">Esquema de Base de Datos</a></span><span>10</span></div>
+  <div class="toc-item"><span><span class="toc-num">10</span><a href="#s7">API REST — Referencia Completa</a></span><span>12</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-1">10.1 Autenticación</a></span><span>12</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-2">10.2 Consultas con IA</a></span><span>12</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-3">10.3 Perfil Médico</a></span><span>13</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-4">10.4 Perfil Paciente</a></span><span>13</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-5">10.5 Documentos Médicos</a></span><span>14</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-6">10.6 Ubicación GPS</a></span><span>14</span></div>
+  <div class="toc-item toc-sub"><span><a href="#s7-7">10.7 Administración</a></span><span>15</span></div>
+  <div class="toc-item"><span><span class="toc-num">11</span><a href="#s8">Frontend — Vistas y Componentes</a></span><span>16</span></div>
+  <div class="toc-item"><span><span class="toc-num">12</span><a href="#s9">Roles y Permisos</a></span><span>17</span></div>
+  <div class="toc-item"><span><span class="toc-num">13</span><a href="#s10">Flujos de Usuario</a></span><span>18</span></div>
+  <div class="toc-item"><span><span class="toc-num">14</span><a href="#s11">Motor de IA</a></span><span>19</span></div>
+  <div class="toc-item"><span><span class="toc-num">15</span><a href="#s12">Sistema de Documentos Médicos</a></span><span>20</span></div>
+  <div class="toc-item"><span><span class="toc-num">16</span><a href="#s13">Usuarios de Prueba</a></span><span>20</span></div>
+  <div class="toc-item"><span><span class="toc-num">17</span><a href="#s14">Estructura del Proyecto</a></span><span>21</span></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ CONTENIDO -->
+<div style="padding:0 2.5cm;">
+
+<!-- SECCIÓN 1 — PLANTEAMIENTO DEL PROBLEMA -->
+<h1 id="s-prob">1. Planteamiento del Problema</h1>
+
+<h2 id="s-prob-1">1.1 Contexto y problemática</h2>
+<p>
+  En Colombia y en gran parte de América Latina, el acceso oportuno a la atención médica continúa siendo
+  uno de los principales desafíos del sistema de salud. Millones de personas enfrentan barreras que van
+  desde la escasez de médicos disponibles en ciertas zonas geográficas, hasta la falta de mecanismos
+  que permitan a un paciente determinar la <strong>urgencia real de sus síntomas</strong> antes de solicitar
+  una cita o acudir a urgencias.
+</p>
+<p>
+  Esta situación genera una consecuencia crítica: la <strong>saturación de los servicios de urgencias</strong>
+  con casos que podrían haberse gestionado ambulatoriamente, mientras pacientes con condiciones de mayor
+  gravedad no reciben atención a tiempo por desconocer el nivel de riesgo de sus síntomas.
+</p>
+<p>
+  Paralelamente, los médicos —especialmente los independientes o recién graduados— no cuentan con
+  plataformas digitales asequibles que les permitan <strong>registrar sus credenciales, verificar su
+  idoneidad profesional</strong> ante pacientes potenciales y conectarse de manera eficiente con quienes
+  necesitan sus servicios en su zona de influencia.
+</p>
+
+<div class="callout warning">
+  <div class="callout-title">📊 Contexto estadístico</div>
+  Según el Ministerio de Salud de Colombia, más del <strong>30 % de las consultas de urgencias</strong>
+  corresponden a casos que no revisten verdadera emergencia médica, lo que colapsa el sistema y
+  genera costos innecesarios estimados en miles de millones de pesos anuales.
+</div>
+
+<h2 id="s-prob-2">1.2 Necesidades identificadas</h2>
+<p>Del análisis de la problemática se identificaron cinco necesidades concretas que MediCheck IA busca resolver:</p>
+<table>
+  <tr><th>#</th><th>Necesidad</th><th>Consecuencia sin solución</th></tr>
+  <tr><td>1</td><td>Triage digital previo a la consulta</td><td>Uso inadecuado de urgencias y demoras en atención grave</td></tr>
+  <tr><td>2</td><td>Directorio verificado de médicos</td><td>Pacientes sin acceso a profesionales confiables y certificados</td></tr>
+  <tr><td>3</td><td>Asignación geográfica médico-paciente</td><td>Desconexión entre oferta médica y demanda en cada zona</td></tr>
+  <tr><td>4</td><td>Verificación documental de profesionales</td><td>Riesgo de intrusismo médico y ejercicio ilegal de la medicina</td></tr>
+  <tr><td>5</td><td>Historial clínico digitalizado</td><td>Pérdida de continuidad en el seguimiento de la salud del paciente</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 2 — QUÉ ES MEDICHECK IA -->
+<h1 id="s-que">2. ¿Qué es MediCheck IA?</h1>
+
+<h2 id="s-que-1">2.1 Definición y propósito</h2>
+<p>
+  <strong>MediCheck IA</strong> es una plataforma web de salud digital que combina <em>gestión médica</em>,
+  <em>inteligencia artificial</em> y <em>geolocalización</em> para conectar pacientes con médicos verificados
+  de forma eficiente, segura e inteligente.
+</p>
+<p>
+  Su propósito central es actuar como un <strong>puente digital entre pacientes y el sistema de salud</strong>,
+  proporcionando tres funciones fundamentales de forma integrada:
+</p>
+<ul>
+  <li>
+    <strong>Triage automático por IA:</strong> el paciente describe sus síntomas en lenguaje natural y
+    el sistema los analiza mediante un modelo de lenguaje de gran escala (LLM), clasificando la gravedad
+    en <em>LEVE, MODERADO o GRAVE</em> con recomendaciones personalizadas en tiempo real.
+  </li>
+  <li>
+    <strong>Red de médicos verificados:</strong> los profesionales de la salud se registran, suben
+    su documentación oficial (título, tarjeta profesional, cédula, etc.) y son habilitados por un
+    administrador tras verificar su idoneidad, garantizando que solo médicos certificados presten servicios.
+  </li>
+  <li>
+    <strong>Asignación geográfica inteligente:</strong> el sistema calcula la distancia entre pacientes
+    y médicos disponibles usando la fórmula de Haversine sobre coordenadas GPS reales, permitiendo al
+    administrador asignar al profesional más cercano y adecuado.
+  </li>
+</ul>
+
+<div class="callout">
+  <div class="callout-title">💡 MediCheck IA no es telemedicina</div>
+  La plataforma no reemplaza la consulta médica ni diagnostica enfermedades. Es un sistema de
+  <strong>orientación, triage y gestión</strong> que facilita la toma de decisiones y optimiza
+  el acceso al profesional adecuado en el momento correcto.
+</div>
+
+<h2 id="s-que-2">2.2 Diferenciación frente a otras soluciones</h2>
+<table>
+  <tr><th>Característica</th><th>Aplicaciones tradicionales</th><th>MediCheck IA</th></tr>
+  <tr><td>Análisis de síntomas</td><td>Formularios fijos o búsqueda manual</td><td>✅ LLM con lenguaje natural (llama3.2)</td></tr>
+  <tr><td>Verificación de médicos</td><td>No existe o es manual sin trazabilidad</td><td>✅ Flujo documental con estados de validación</td></tr>
+  <tr><td>Asignación geográfica</td><td>No disponible</td><td>✅ Haversine GPS + mapa interactivo Leaflet</td></tr>
+  <tr><td>Disponibilidad offline de IA</td><td>Depende de APIs externas de pago</td><td>✅ Ollama local + fallback por palabras clave</td></tr>
+  <tr><td>Roles diferenciados</td><td>Generalmente solo paciente o médico</td><td>✅ Paciente / Médico / Administrador con RBAC</td></tr>
+  <tr><td>Alertas automáticas</td><td>Ausentes o manuales</td><td>✅ Email al médico en casos GRAVE/MODERADO</td></tr>
+  <tr><td>Historial clínico digital</td><td>Aislado por plataforma</td><td>✅ Centralizado con nivel de gravedad y fecha</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 3 — IMPACTO ESPERADO -->
+<h1 id="s-impacto">3. Impacto Esperado</h1>
+<p>
+  MediCheck IA está diseñada para generar impacto concreto y medible en tres dimensiones
+  del ecosistema de salud: los pacientes, los profesionales médicos y el sistema de salud en general.
+</p>
+
+<h2 id="s-impacto-1">3.1 Impacto para los Pacientes</h2>
+<table>
+  <tr><th>Dimensión</th><th>Situación actual</th><th>Con MediCheck IA</th></tr>
+  <tr>
+    <td>Valoración de síntomas</td>
+    <td>El paciente no sabe si debe ir a urgencias o esperar</td>
+    <td>Recibe clasificación inmediata (LEVE / MODERADO / GRAVE) con recomendación clara</td>
+  </tr>
+  <tr>
+    <td>Acceso a médico de confianza</td>
+    <td>Búsqueda aleatoria sin garantía de idoneidad</td>
+    <td>Médicos con credenciales verificadas, historial de documentos revisados por admin</td>
+  </tr>
+  <tr>
+    <td>Continuidad de atención</td>
+    <td>Sin historial compartido entre consultas</td>
+    <td>Historial completo de consultas accesible para el médico asignado</td>
+  </tr>
+  <tr>
+    <td>Ubicación del médico</td>
+    <td>Desconocida; el paciente debe llamar o buscar</td>
+    <td>Mapa en tiempo real con la ubicación GPS del médico asignado</td>
+  </tr>
+  <tr>
+    <td>Tiempo de respuesta</td>
+    <td>Horas o días para obtener orientación médica básica</td>
+    <td>Análisis IA en segundos; médico notificado automáticamente en casos graves</td>
+  </tr>
+</table>
+
+<h2 id="s-impacto-2">3.2 Impacto para los Médicos</h2>
+<table>
+  <tr><th>Dimensión</th><th>Situación actual</th><th>Con MediCheck IA</th></tr>
+  <tr>
+    <td>Visibilidad profesional</td>
+    <td>Dependencia de redes sociales o directorios no verificados</td>
+    <td>Perfil digital profesional con estado de verificación oficial visible para pacientes</td>
+  </tr>
+  <tr>
+    <td>Gestión de pacientes</td>
+    <td>Registros en papel o herramientas genéricas (Excel, WhatsApp)</td>
+    <td>Panel dedicado con lista de pacientes asignados, consultas y alertas</td>
+  </tr>
+  <tr>
+    <td>Notificaciones urgentes</td>
+    <td>El médico no sabe cuándo un paciente tiene síntomas graves</td>
+    <td>Email automático al médico cuando un paciente registra consulta GRAVE o MODERADA</td>
+  </tr>
+  <tr>
+    <td>Documentación profesional</td>
+    <td>Proceso manual y lento de presentación de credenciales</td>
+    <td>Upload digital seguro con flujo de revisión trazable por el administrador</td>
+  </tr>
+</table>
+
+<h2 id="s-impacto-3">3.3 Impacto en el Sistema de Salud</h2>
+<p>A nivel macro, MediCheck IA contribuye a los siguientes objetivos sistémicos:</p>
+<ul>
+  <li>
+    <strong>Reducción de la saturación en urgencias:</strong> al proporcionar un triage previo basado en IA,
+    los pacientes con síntomas leves son orientados a la vía ambulatoria, liberando capacidad hospitalaria
+    para emergencias reales.
+  </li>
+  <li>
+    <strong>Control del intrusismo médico:</strong> el flujo de verificación documental garantiza que solo
+    médicos con credenciales válidas sean habilitados en la plataforma, reduciendo el riesgo de ejercicio
+    ilegal de la medicina.
+  </li>
+  <li>
+    <strong>Distribución geográfica eficiente:</strong> la asignación médico-paciente basada en proximidad
+    GPS optimiza la cobertura territorial, priorizando la atención en zonas con menor densidad médica.
+  </li>
+  <li>
+    <strong>Digitalización del expediente clínico:</strong> cada consulta queda registrada con fecha, síntomas,
+    nivel de gravedad y recomendación, construyendo un historial clínico estructurado que mejora la
+    continuidad asistencial.
+  </li>
+  <li>
+    <strong>Escalabilidad y soberanía tecnológica:</strong> al usar un modelo LLM local (Ollama) en lugar de
+    APIs externas de pago, la plataforma puede desplegarse en cualquier entorno sin dependencia de terceros
+    ni costos variables por consulta de IA.
+  </li>
+</ul>
+
+<div class="callout">
+  <div class="callout-title">🎯 Visión a largo plazo</div>
+  MediCheck IA sienta las bases para una plataforma de salud digital escalable que, en fases futuras,
+  podría incorporar: teleconsulta en tiempo real, integración con sistemas EPS/IPS, módulo de farmacia
+  conectada, análisis predictivo de epidemias locales y soporte multiidioma para poblaciones indígenas
+  o rurales.
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 4 -->
+<h1 id="s1">4. Descripción General del Sistema</h1>
+<p>
+  <strong>MediCheck IA</strong> es una plataforma de salud digital desarrollada con arquitectura
+  cliente-servidor que integra modelos de lenguaje de gran escala (LLM) para el análisis automático
+  de síntomas médicos. El sistema gestiona tres tipos de usuarios (pacientes, médicos y administradores)
+  con flujos diferenciados, validación documental y asignación geográfica inteligente.
+</p>
+
+<h2 id="s1-1">4.1 Objetivos</h2>
+<ul>
+  <li>Permitir a los pacientes describir síntomas y recibir un análisis de gravedad inmediato mediante IA</li>
+  <li>Gestionar el registro, verificación y habilitación de médicos con documentación oficial</li>
+  <li>Asignar médicos a pacientes considerando proximidad geográfica</li>
+  <li>Proporcionar al administrador herramientas completas de gestión y supervisión</li>
+  <li>Garantizar la seguridad mediante autenticación JWT y control de acceso basado en roles (RBAC)</li>
+</ul>
+
+<h2 id="s1-2">4.2 Funcionalidades principales</h2>
+<table>
+  <tr><th>Módulo</th><th>Funcionalidad</th><th>Tecnología clave</th></tr>
+  <tr><td>Autenticación</td><td>Registro, login, redirección por rol, bloqueo hasta completar perfil</td><td>JWT / Spring Security</td></tr>
+  <tr><td>Consultas IA</td><td>Análisis de síntomas: LEVE / MODERADO / GRAVE</td><td>Ollama + llama3.2:3b</td></tr>
+  <tr><td>Perfil paciente</td><td>Form 4 pasos: datos personales, médicos, emergencia, preferencias</td><td>Vue 3 reactivo</td></tr>
+  <tr><td>Perfil médico</td><td>Form 3 pasos: personales, profesionales, documentos</td><td>Vue 3 + multipart</td></tr>
+  <tr><td>Vista CV</td><td>Perfil en formato hoja de vida (solo lectura)</td><td>Vue 3 / CSS grid</td></tr>
+  <tr><td>Panel médico</td><td>Gestión de pacientes asignados y sus consultas</td><td>Spring + Vue</td></tr>
+  <tr><td>Mapa GPS</td><td>Geolocalización en tiempo real</td><td>Leaflet / OpenStreetMap</td></tr>
+  <tr><td>Admin verificación</td><td>Revisión de documentos, cambio de estado</td><td>Spring / blob download</td></tr>
+  <tr><td>Admin usuarios</td><td>Listado paginado con filtros (20/página)</td><td>JPA Specification</td></tr>
+  <tr><td>Admin asignación</td><td>Asignación médico-paciente por proximidad</td><td>Haversine / Leaflet</td></tr>
+  <tr><td>Alertas</td><td>Email automático al médico en consultas graves</td><td>Spring Mail / Gmail SMTP</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 5 -->
+<h1 id="s2">5. Stack Tecnológico</h1>
+
+<h2>5.1 Backend</h2>
+<table>
+  <tr><th>Tecnología</th><th>Versión</th><th>Rol en el sistema</th></tr>
+  <tr><td>Java</td><td>17 LTS</td><td>Lenguaje del servidor</td></tr>
+  <tr><td>Spring Boot</td><td>3.5.x</td><td>Framework principal REST API</td></tr>
+  <tr><td>Spring Security</td><td>6.x</td><td>Autenticación JWT y autorización RBAC</td></tr>
+  <tr><td>Spring Data JPA</td><td>3.x</td><td>Persistencia con Hibernate 6 + JPA Specification</td></tr>
+  <tr><td>PostgreSQL</td><td>15+</td><td>Base de datos relacional</td></tr>
+  <tr><td>jjwt</td><td>0.11.5</td><td>Generación y validación de tokens JWT (HS256)</td></tr>
+  <tr><td>Lombok</td><td>latest</td><td>Reducción de boilerplate (@Data, @RequiredArgsConstructor)</td></tr>
+  <tr><td>Spring Mail</td><td>—</td><td>Alertas por email vía Gmail SMTP</td></tr>
+  <tr><td>Ollama REST</td><td>—</td><td>Cliente HTTP al modelo LLM local</td></tr>
+  <tr><td>JdbcTemplate</td><td>—</td><td>SQL programático para seeder y corrección de constraints</td></tr>
+</table>
+
+<h2>5.2 Frontend</h2>
+<table>
+  <tr><th>Tecnología</th><th>Versión</th><th>Rol en el sistema</th></tr>
+  <tr><td>Vue 3</td><td>3.4.x</td><td>Framework SPA con Composition API</td></tr>
+  <tr><td>Vue Router</td><td>4.6.x</td><td>Enrutamiento con guardas de autenticación y perfil</td></tr>
+  <tr><td>Axios</td><td>1.x</td><td>Cliente HTTP con interceptores JWT automáticos</td></tr>
+  <tr><td>Leaflet</td><td>1.9.x</td><td>Mapas interactivos sobre OpenStreetMap</td></tr>
+  <tr><td>Vite</td><td>5.x</td><td>Bundler, servidor de desarrollo, hot-reload</td></tr>
+</table>
+
+<h2>5.3 IA y servicios externos</h2>
+<table>
+  <tr><th>Servicio</th><th>Uso</th><th>Puerto</th></tr>
+  <tr><td>Ollama</td><td>Servidor de modelos LLM local</td><td>11434</td></tr>
+  <tr><td>llama3.2:3b</td><td>Modelo de lenguaje para análisis de síntomas</td><td>—</td></tr>
+  <tr><td>Gmail SMTP</td><td>Envío de alertas médicas por email</td><td>587 (STARTTLS)</td></tr>
+  <tr><td>OpenStreetMap</td><td>Tiles de mapa para Leaflet</td><td>CDN externo</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 6 -->
+<h1 id="s3">6. Arquitectura del Sistema</h1>
+
+<h2 id="s3-1">6.1 Diagrama de capas</h2>
+<pre>
+┌─────────────────────────────────────────────────────────────────────────┐
+│                     CAPA DE PRESENTACIÓN (Puerto 5173)                   │
+│                          Vue 3 SPA — Vite                                │
+│                                                                          │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌─────────────┐ │
+│  │   PACIENTE   │  │    MÉDICO    │  │    ADMIN     │  │ Componentes │ │
+│  │  Dashboard   │  │ Panel médico │  │ Panel admin  │  │  Sidebar    │ │
+│  │  Consultas   │  │ Mis pacientes│  │  Usuarios    │  │  ConsultaCard│ │
+│  │  Perfil CV   │  │  Perfil CV   │  │  Asignación  │  │             │ │
+│  └──────────────┘  └──────────────┘  └──────────────┘  └─────────────┘ │
+│                         Axios + JWT Bearer Token                         │
+└──────────────────────────────┬──────────────────────────────────────────┘
+                                │ HTTPS/REST (Puerto 8080)
+┌──────────────────────────────▼──────────────────────────────────────────┐
+│                     CAPA DE NEGOCIO (Puerto 8080)                        │
+│                      Spring Boot 3 — Java 17                             │
+│                                                                          │
+│  ┌──────────────┐  ┌───────────────────────────────────────────────────┐│
+│  │  SEGURIDAD   │  │                  CONTROLLERS                      ││
+│  │  JwtFilter   │  │  AuthController   ConsultaController              ││
+│  │  SecurityCfg │  │  AdminController  PerfilMedicoController          ││
+│  │  CORS Config │  │  MedicoController PerfilPacienteController        ││
+│  └──────────────┘  │  DocumentoController  UbicacionController         ││
+│                    └───────────────────────────────────────────────────┘│
+│  ┌──────────────────────────────────────────────────────────────────────┐│
+│  │                          SERVICES                                    ││
+│  │  ConsultaService   OllamaService   AlertaService   ArchivoService   ││
+│  └──────────────────────────────────────────────────────────────────────┘│
+│                                   │                                      │
+│             ┌─────────────────────┼────────────────────┐                 │
+│             ▼                     ▼                    ▼                 │
+│        PostgreSQL           ./uploads/           Ollama API              │
+│        (JPA/Hibernate)      (archivos)          (:11434)                 │
+└─────────────────────────────────────────────────────────────────────────┘
+</pre>
+
+<h2 id="s3-2">6.2 Flujo de una consulta con IA</h2>
+<pre>
+Paciente describe síntomas
+          │
+          ▼
+  POST /api/consultas  {sintomas: "..."}
+          │
+          ▼
+  ConsultaService.crearConsulta()
+          │
+          ├──► OllamaService.analizar(sintomas)
+          │          │
+          │          ├──[OK]──► Modelo llama3.2:3b analiza y devuelve JSON:
+          │          │          {"nivel":"MODERADO","recomendacion":"..."}
+          │          │
+          │          └──[FAIL]─► analizarNivelFallback()
+          │                      (detección por palabras clave hardcodeadas)
+          │
+          ▼
+  Guardar Consulta en BD (nivel + recomendacion)
+          │
+          ├── ¿nivel GRAVE o MODERADO?  Y  ¿paciente tiene médico asignado?
+          │          │
+          │          └──► AlertaService.notificarMedico()
+          │                    └──► Gmail SMTP ──► Email al médico
+          │
+          ▼
+  Retornar consulta guardada al frontend
+</pre>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 7 -->
+<h1 id="s4">7. Requisitos e Instalación</h1>
+
+<h2 id="s4-1">7.1 Requisitos previos</h2>
+<table>
+  <tr><th>Software</th><th>Versión mínima</th><th>Verificar con</th></tr>
+  <tr><td>Java JDK</td><td>17</td><td><code>java -version</code></td></tr>
+  <tr><td>Maven (o mvnw)</td><td>3.8+</td><td><code>mvn -version</code></td></tr>
+  <tr><td>Node.js</td><td>18+</td><td><code>node -v</code></td></tr>
+  <tr><td>npm</td><td>9+</td><td><code>npm -v</code></td></tr>
+  <tr><td>PostgreSQL</td><td>15+</td><td><code>psql --version</code></td></tr>
+  <tr><td>Ollama</td><td>latest (opcional)</td><td><code>ollama --version</code></td></tr>
+</table>
+<div class="callout warning">
+  <div class="callout-title">⚠ Nota sobre Ollama</div>
+  Ollama es <strong>opcional</strong>. Si no está disponible, el sistema activa automáticamente
+  el analizador de fallback por palabras clave que clasifica los síntomas correctamente.
+</div>
+
+<h2 id="s4-2">7.2 Configuración paso a paso</h2>
+
+<h3>Paso 1 — Base de datos</h3>
+<pre><code>-- Crear la base de datos en PostgreSQL
+CREATE DATABASE medicheck_db;
+</code></pre>
+<p>Hibernate crea las tablas automáticamente con <code>ddl-auto=update</code>.</p>
+
+<h3>Paso 2 — Ollama (opcional)</h3>
+<pre><code>ollama pull llama3.2:3b    # Descargar el modelo
+ollama serve               # Iniciar servidor (puerto 11434)
+</code></pre>
+
+<h3>Paso 3 — Backend</h3>
+<pre><code>cd medicheck/backend
+.\mvnw spring-boot:run          # Windows
+./mvnw spring-boot:run          # Linux / Mac
+</code></pre>
+<p>El servidor arranca en <strong>http://localhost:8080</strong>. El <code>DataSeeder</code> crea automáticamente los usuarios de prueba.</p>
+
+<h3>Paso 4 — Frontend</h3>
+<pre><code>cd medicheck/frontend
+npm install
+npm run dev
+</code></pre>
+<p>La aplicación queda disponible en <strong>http://localhost:5173</strong></p>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 8 -->
+<h1 id="s5">8. Variables de Entorno</h1>
+<p>Todas las propiedades del backend soportan override por variable de entorno:</p>
+<table>
+  <tr><th>Variable</th><th>Default</th><th>Descripción</th></tr>
+  <tr><td><code>DB_URL</code></td><td>jdbc:postgresql://localhost:5432/medicheck_db</td><td>URL de conexión a PostgreSQL</td></tr>
+  <tr><td><code>DB_USER</code></td><td>postgres</td><td>Usuario de PostgreSQL</td></tr>
+  <tr><td><code>DB_PASSWORD</code></td><td>medicheck123</td><td>Contraseña de PostgreSQL</td></tr>
+  <tr><td><code>DDL_AUTO</code></td><td>update</td><td>Estrategia de esquema Hibernate</td></tr>
+  <tr><td><code>JWT_SECRET</code></td><td>medicheck-secret-key-...</td><td>Clave HMAC para firmar tokens JWT</td></tr>
+  <tr><td><code>JWT_EXPIRATION</code></td><td>86400000</td><td>Expiración del token en ms (24 h)</td></tr>
+  <tr><td><code>OLLAMA_URL</code></td><td>http://localhost:11434</td><td>URL del servidor Ollama</td></tr>
+  <tr><td><code>OLLAMA_MODEL</code></td><td>llama3.2:3b</td><td>Nombre del modelo de IA</td></tr>
+  <tr><td><code>MAIL_USER</code></td><td>tucorreo@gmail.com</td><td>Cuenta de correo para alertas</td></tr>
+  <tr><td><code>MAIL_PASS</code></td><td>tu-app-password</td><td>Contraseña de aplicación Gmail</td></tr>
+  <tr><td><code>UPLOAD_DIR</code></td><td>./uploads</td><td>Directorio de archivos subidos</td></tr>
+</table>
+
+<h3>Frontend — <code>.env</code></h3>
+<pre><code>VITE_API_URL=http://localhost:8080/api</code></pre>
+
+<div class="callout danger">
+  <div class="callout-title">🔐 Seguridad en producción</div>
+  Cambia <code>JWT_SECRET</code> por una cadena aleatoria de mínimo 32 caracteres.
+  Usa contraseña de aplicación de Gmail (no la contraseña principal de la cuenta).
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 9 -->
+<h1 id="s6">9. Esquema de Base de Datos</h1>
+
+<h2>Relaciones principales</h2>
+<ul>
+  <li><code>usuarios.medico_id</code> → <code>usuarios.id</code> (paciente → su médico asignado)</li>
+  <li><code>perfiles_medico.usuario_id</code> → <code>usuarios.id</code> (1:1)</li>
+  <li><code>perfiles_paciente.usuario_id</code> → <code>usuarios.id</code> (1:1)</li>
+  <li><code>documentos_medicos.usuario_id</code> → <code>usuarios.id</code> (N:1)</li>
+  <li><code>consultas.usuario_id</code> → <code>usuarios.id</code> (N:1)</li>
+  <li><code>ubicaciones.usuario_id</code> → <code>usuarios.id</code> (1:1)</li>
+</ul>
+
+<div class="schema-grid">
+  <div class="schema-box">
+    <div class="schema-header">USUARIOS</div>
+    <div class="schema-body">
+      <div class="schema-row"><span class="schema-pk">PK</span> id BIGINT</div>
+      <div class="schema-row"><span style="width:20px"></span> nombre VARCHAR</div>
+      <div class="schema-row"><span style="width:20px"></span> email VARCHAR UNIQUE</div>
+      <div class="schema-row"><span style="width:20px"></span> password VARCHAR (bcrypt)</div>
+      <div class="schema-row"><span style="width:20px"></span> rol ENUM(PACIENTE,MEDICO,ADMIN)</div>
+      <div class="schema-row"><span class="schema-fk">FK</span> medico_id → usuarios.id</div>
+      <div class="schema-row"><span style="width:20px"></span> fecha_registro TIMESTAMP</div>
+    </div>
+  </div>
+  <div class="schema-box">
+    <div class="schema-header">CONSULTAS</div>
+    <div class="schema-body">
+      <div class="schema-row"><span class="schema-pk">PK</span> id BIGINT</div>
+      <div class="schema-row"><span class="schema-fk">FK</span> usuario_id → usuarios.id</div>
+      <div class="schema-row"><span style="width:20px"></span> sintomas VARCHAR(1000)</div>
+      <div class="schema-row"><span style="width:20px"></span> nivel VARCHAR (LEVE/MODERADO/GRAVE)</div>
+      <div class="schema-row"><span style="width:20px"></span> recomendacion VARCHAR(2000)</div>
+      <div class="schema-row"><span style="width:20px"></span> fecha_consulta TIMESTAMP</div>
+    </div>
+  </div>
+  <div class="schema-box">
+    <div class="schema-header">PERFILES_MEDICO</div>
+    <div class="schema-body">
+      <div class="schema-row"><span class="schema-pk">PK</span> id BIGINT</div>
+      <div class="schema-row"><span class="schema-fk">FK</span> usuario_id UNIQUE → usuarios.id</div>
+      <div class="schema-row"><span style="width:20px"></span> apellidos, tipo_documento, num_documento</div>
+      <div class="schema-row"><span style="width:20px"></span> fecha_nacimiento, genero, telefono</div>
+      <div class="schema-row"><span style="width:20px"></span> ciudad, pais, numero_licencia</div>
+      <div class="schema-row"><span style="width:20px"></span> especialidad, universidad, anio_graduacion</div>
+      <div class="schema-row"><span style="width:20px"></span> estado_validacion ENUM(...)</div>
+      <div class="schema-row"><span style="width:20px"></span> atencion_presencial, virtual, domiciliaria</div>
+    </div>
+  </div>
+  <div class="schema-box">
+    <div class="schema-header">PERFILES_PACIENTE</div>
+    <div class="schema-body">
+      <div class="schema-row"><span class="schema-pk">PK</span> id BIGINT</div>
+      <div class="schema-row"><span class="schema-fk">FK</span> usuario_id UNIQUE → usuarios.id</div>
+      <div class="schema-row"><span style="width:20px"></span> apellidos, tipo_documento, num_documento</div>
+      <div class="schema-row"><span style="width:20px"></span> fecha_nacimiento, genero, telefono, ciudad</div>
+      <div class="schema-row"><span style="width:20px"></span> grupo_sanguineo, alergias TEXT</div>
+      <div class="schema-row"><span style="width:20px"></span> medicamentos_actuales TEXT</div>
+      <div class="schema-row"><span style="width:20px"></span> nombre_contacto_emergencia, parentesco</div>
+      <div class="schema-row"><span style="width:20px"></span> modalidad_presencial, virtual, domiciliaria</div>
+    </div>
+  </div>
+  <div class="schema-box">
+    <div class="schema-header">DOCUMENTOS_MEDICOS</div>
+    <div class="schema-body">
+      <div class="schema-row"><span class="schema-pk">PK</span> id BIGINT</div>
+      <div class="schema-row"><span class="schema-fk">FK</span> usuario_id → usuarios.id</div>
+      <div class="schema-row"><span style="width:20px"></span> tipo ENUM(11 valores)</div>
+      <div class="schema-row"><span style="width:20px"></span> ruta_archivo, nombre_original</div>
+      <div class="schema-row"><span style="width:20px"></span> content_type, tamano</div>
+      <div class="schema-row"><span style="width:20px"></span> estado ENUM(PENDIENTE..VERIFICADO)</div>
+      <div class="schema-row"><span style="width:20px"></span> fecha_subida, fecha_revision</div>
+    </div>
+  </div>
+  <div class="schema-box">
+    <div class="schema-header">UBICACIONES</div>
+    <div class="schema-body">
+      <div class="schema-row"><span class="schema-pk">PK</span> id BIGINT</div>
+      <div class="schema-row"><span class="schema-fk">FK</span> usuario_id UNIQUE → usuarios.id</div>
+      <div class="schema-row"><span style="width:20px"></span> latitud DOUBLE</div>
+      <div class="schema-row"><span style="width:20px"></span> longitud DOUBLE</div>
+      <div class="schema-row"><span style="width:20px"></span> actualizado TIMESTAMP</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 10 -->
+<h1 id="s7">10. API REST — Referencia Completa</h1>
+<p><strong>Base URL:</strong> <code>http://localhost:8080/api</code> &nbsp;|&nbsp; <strong>Auth:</strong> <code>Authorization: Bearer &lt;token&gt;</code></p>
+
+<h2 id="s7-1">10.1 Autenticación — <code>/api/auth</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Auth</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/auth/login</code></td><td>❌</td><td>Iniciar sesión. Retorna token JWT + perfilCompleto</td></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/auth/registro</code></td><td>❌</td><td>Crear cuenta. Retorna token + perfilCompleto: false</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/auth/me</code></td><td>✅</td><td>Datos del usuario autenticado</td></tr>
+</table>
+
+<h2 id="s7-2">10.2 Consultas con IA — <code>/api/consultas</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Auth requerida</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/consultas</code></td><td><span class="badge badge-paciente">PACIENTE</span></td><td>Crear consulta. Analiza síntomas con Ollama</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/consultas/mis-consultas</code></td><td><span class="badge badge-paciente">PACIENTE</span></td><td>Listar consultas del usuario autenticado</td></tr>
+</table>
+
+<h2 id="s7-3">10.3 Perfil Médico — <code>/api/medico</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/medico/perfil</code></td><td>Obtener perfil profesional propio</td></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/medico/perfil</code></td><td>Crear o actualizar perfil profesional</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/medico/mis-pacientes</code></td><td>Pacientes asignados al médico autenticado</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/medico/consultas-pacientes</code></td><td>Consultas de todos sus pacientes asignados</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/medico/pacientes-disponibles</code></td><td>Pacientes sin médico asignado</td></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/medico/asignar-paciente/{id}</code></td><td>Asignarse un paciente disponible</td></tr>
+</table>
+
+<h2 id="s7-4">10.4 Perfil Paciente — <code>/api/paciente</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/paciente/perfil</code></td><td>Obtener perfil propio</td></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/paciente/perfil</code></td><td>Crear o actualizar perfil completo</td></tr>
+</table>
+
+<h2 id="s7-5">10.5 Documentos Médicos — <code>/api/documentos</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/documentos</code></td><td>Listar documentos del médico autenticado</td></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/documentos/subir</code></td><td>Subir documento (multipart/form-data: archivo + tipo)</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/documentos/ver/{id}</code></td><td>Visualizar archivo binario (requiere owner o ADMIN)</td></tr>
+</table>
+
+<h2 id="s7-6">10.6 Ubicación GPS — <code>/api/ubicacion</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/ubicacion</code></td><td>Actualizar propia ubicación GPS {latitud, longitud}</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/ubicacion/mi-medico</code></td><td>Ubicación del médico asignado (paciente)</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/ubicacion/mis-pacientes</code></td><td>Ubicaciones de todos los pacientes asignados (médico)</td></tr>
+</table>
+
+<h2 id="s7-7">10.7 Administración — <code>/api/admin</code></h2>
+<table>
+  <tr><th>Método</th><th>Endpoint</th><th>Descripción</th></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/estadisticas</code></td><td>Contadores globales del sistema</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/medicos</code></td><td>Lista de médicos con estado y conteo de documentos</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/medicos/{id}</code></td><td>Detalle completo: perfil + documentos</td></tr>
+  <tr><td><span class="badge badge-put">PUT</span></td><td><code>/admin/medicos/{id}/estado</code></td><td>Cambiar estado de validación del médico</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/documentos/pendientes</code></td><td>Documentos en estado PENDIENTE</td></tr>
+  <tr><td><span class="badge badge-put">PUT</span></td><td><code>/admin/documentos/{id}/estado</code></td><td>Cambiar estado de un documento</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/usuarios?pagina&nombre&rol&ciudad&estado</code></td><td>Listado paginado con filtros (20/página)</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/perfil/{userId}</code></td><td>Perfil completo de cualquier usuario</td></tr>
+  <tr><td><span class="badge badge-get">GET</span></td><td><code>/admin/asignacion/mapa</code></td><td>Todos los usuarios con coordenadas GPS</td></tr>
+  <tr><td><span class="badge badge-post">POST</span></td><td><code>/admin/asignacion</code></td><td>Asignar médico a paciente {pacienteId, medicoId}</td></tr>
+  <tr><td><span class="badge badge-del">DELETE</span></td><td><code>/admin/asignacion/{pacienteId}</code></td><td>Quitar asignación de un paciente</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 11 -->
+<h1 id="s8">11. Frontend — Vistas y Componentes</h1>
+<table>
+  <tr><th>Vista</th><th>Ruta</th><th>Rol</th><th>Descripción</th></tr>
+  <tr><td>LoginView</td><td><code>/login</code></td><td>Público</td><td>Formulario de inicio de sesión con JWT</td></tr>
+  <tr><td>RegisterView</td><td><code>/registro</code></td><td>Público</td><td>Registro con selección de rol paciente/médico</td></tr>
+  <tr><td>PerfilPacienteView</td><td><code>/perfil-paciente</code></td><td><span class="badge badge-paciente">PACIENTE</span></td><td>Form. 4 pasos: personales, médicos, emergencia, preferencias</td></tr>
+  <tr><td>RegisterMedicoView</td><td><code>/registro-medico</code></td><td><span class="badge badge-medico">MEDICO</span></td><td>Form. 3 pasos: personales, profesionales, documentos</td></tr>
+  <tr><td>PerfilCVView</td><td><code>/mi-perfil</code></td><td>PAC/MED</td><td>Vista perfil estilo hoja de vida (solo lectura)</td></tr>
+  <tr><td>PerfilCVView</td><td><code>/admin/perfil/:id</code></td><td><span class="badge badge-admin">ADMIN</span></td><td>Vista CV de cualquier usuario + acciones admin</td></tr>
+  <tr><td>DashboardView</td><td><code>/dashboard</code></td><td><span class="badge badge-paciente">PACIENTE</span></td><td>Estadísticas y consultas recientes</td></tr>
+  <tr><td>NuevaConsultaView</td><td><code>/nueva-consulta</code></td><td><span class="badge badge-paciente">PACIENTE</span></td><td>Ingreso de síntomas + análisis IA + resultado</td></tr>
+  <tr><td>HistorialView</td><td><code>/historial</code></td><td><span class="badge badge-paciente">PACIENTE</span></td><td>Historial completo de consultas con nivel de gravedad</td></tr>
+  <tr><td>MapaView</td><td><code>/mapa</code></td><td>PAC/MED</td><td>Mapa GPS con Leaflet/OpenStreetMap</td></tr>
+  <tr><td>PanelMedicoView</td><td><code>/panel-medico</code></td><td><span class="badge badge-medico">MEDICO</span></td><td>Panel: pacientes asignados, consultas, alertas</td></tr>
+  <tr><td>AdminView</td><td><code>/admin</code></td><td><span class="badge badge-admin">ADMIN</span></td><td>Panel principal de verificación de médicos</td></tr>
+  <tr><td>AdminUsuariosView</td><td><code>/admin/usuarios</code></td><td><span class="badge badge-admin">ADMIN</span></td><td>Lista paginada con filtros + navegación a perfiles</td></tr>
+  <tr><td>AdminAsignacionView</td><td><code>/admin/asignacion</code></td><td><span class="badge badge-admin">ADMIN</span></td><td>Mapa de asignación médico-paciente con distancia</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 12 -->
+<h1 id="s9">12. Roles y Permisos</h1>
+<h2>Matriz de acceso a endpoints</h2>
+<table>
+  <tr><th>Grupo de endpoints</th><th>PACIENTE</th><th>MEDICO</th><th>ADMIN</th></tr>
+  <tr><td><code>/api/auth/**</code></td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td><code>/api/consultas/**</code></td><td>✅</td><td>❌</td><td>✅</td></tr>
+  <tr><td><code>/api/paciente/**</code></td><td>✅</td><td>❌</td><td>✅</td></tr>
+  <tr><td><code>/api/medico/**</code></td><td>❌</td><td>✅</td><td>✅</td></tr>
+  <tr><td><code>/api/documentos/**</code></td><td>❌</td><td>✅</td><td>✅</td></tr>
+  <tr><td><code>/api/ubicacion/**</code></td><td>✅</td><td>✅</td><td>✅</td></tr>
+  <tr><td><code>/api/admin/**</code></td><td>❌</td><td>❌</td><td>✅</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 13 -->
+<h1 id="s10">13. Flujos de Usuario</h1>
+
+<h2>13.1 Flujo de autenticación</h2>
+<pre>
+Usuario ingresa email + contraseña
+  │
+  ▼
+POST /api/auth/login
+  │
+  ├── Credenciales incorrectas → 401 Unauthorized
+  │
+  └── OK → JWT + rol + perfilCompleto
+              │
+              ├── perfilCompleto = false  →  Formulario de perfil
+              │      PACIENTE → /perfil-paciente  (4 pasos)
+              │      MÉDICO   → /registro-medico  (3 pasos)
+              │
+              └── perfilCompleto = true  →  Dashboard del rol
+                     PACIENTE → /dashboard
+                     MÉDICO   → /panel-medico
+                     ADMIN    → /admin
+</pre>
+
+<h2>13.2 Restricción de perfil incompleto</h2>
+<p>
+  El router Vue implementa una guarda <code>beforeEach</code> que verifica el flag
+  <code>mc_perfil_ok</code> en localStorage. Si es <code>false</code>, cualquier intento
+  de navegar a una ruta protegida que no sea el formulario de perfil es redirigido
+  automáticamente al formulario correspondiente al rol del usuario.
+</p>
+
+<h2>13.3 Proceso de verificación médica</h2>
+<pre>
+Médico se registra
+  │
+  ▼  Estado: PENDIENTE
+Completa perfil personal + profesional + sube documentos
+  │
+  ▼  Estado: PENDIENTE (documentos en revisión)
+Admin abre el perfil del médico
+  │
+  ├── Revisa cada documento (cambia estado: EN_REVISION → VERIFICADO / RECHAZADO)
+  │
+  └── Cambia estado del médico: VERIFICADO / RECHAZADO / SUSPENDIDO
+</pre>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 14 -->
+<h1 id="s11">14. Motor de IA</h1>
+<h2>14.1 Integración con Ollama</h2>
+<p>
+  El servicio <code>OllamaService</code> envía los síntomas al modelo LLM con un prompt
+  estructurado que obliga a responder en JSON estricto. La respuesta se parsea extrayendo
+  los campos <code>nivel</code> y <code>recomendacion</code>.
+</p>
+
+<h2>14.2 Sistema de fallback</h2>
+<p>
+  Si Ollama no está disponible o retorna un error, <code>ConsultaService</code> activa
+  <code>analizarNivelFallback()</code> que clasifica los síntomas mediante detección
+  de palabras clave en el texto.
+</p>
+
+<table>
+  <tr><th>Nivel</th><th>Criterios de clasificación</th></tr>
+  <tr><td><strong>GRAVE</strong></td><td>Dolor de pecho, dificultad respiratoria, pérdida de consciencia, sangrado</td></tr>
+  <tr><td><strong>MODERADO</strong></td><td>Fiebre, vómitos, mareos, dolor abdominal, fatiga intensa</td></tr>
+  <tr><td><strong>LEVE</strong></td><td>Síntomas menores que no encajan en los anteriores</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 15 -->
+<h1 id="s12">15. Sistema de Documentos Médicos</h1>
+<h2>15.1 Almacenamiento</h2>
+<p>Los archivos se guardan en <code>./uploads/medicos/{usuarioId}/{uuid}.ext</code>. Si el médico sube el mismo tipo de documento dos veces, el anterior se elimina automáticamente.</p>
+
+<h2>15.2 Tipos de documento</h2>
+<table>
+  <tr><th>Enum</th><th>Descripción</th><th>¿Obligatorio?</th></tr>
+  <tr><td>FOTOGRAFIA_PROFESIONAL</td><td>Fotografía profesional</td><td>✅ Sí</td></tr>
+  <tr><td>DOCUMENTO_IDENTIDAD_FRONTAL</td><td>Documento de identidad (frontal)</td><td>✅ Sí</td></tr>
+  <tr><td>DOCUMENTO_IDENTIDAD_REVERSO</td><td>Documento de identidad (reverso)</td><td>✅ Sí</td></tr>
+  <tr><td>DIPLOMA_UNIVERSITARIO</td><td>Diploma universitario</td><td>✅ Sí</td></tr>
+  <tr><td>TARJETA_PROFESIONAL</td><td>Tarjeta profesional</td><td>✅ Sí</td></tr>
+  <tr><td>SELFIE_VALIDACION</td><td>Selfie de validación</td><td>Opcional</td></tr>
+  <tr><td>CERTIFICADO_RETHUS</td><td>Certificado RETHUS</td><td>Opcional</td></tr>
+  <tr><td>CERTIFICADO_ESPECIALIZACION</td><td>Cert. de especialización</td><td>Opcional</td></tr>
+  <tr><td>ANTECEDENTES_DISCIPLINARIOS</td><td>Antecedentes disciplinarios</td><td>Opcional</td></tr>
+  <tr><td>CERTIFICADO_LABORAL</td><td>Certificado laboral</td><td>Opcional</td></tr>
+  <tr><td>SEGURO_MEDICO_PROFESIONAL</td><td>Seguro médico profesional</td><td>Opcional</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 16 -->
+<h1 id="s13">16. Usuarios de Prueba</h1>
+<p>El <code>DataSeeder</code> crea automáticamente estos usuarios al iniciar el backend (si no existen):</p>
+<table>
+  <tr><th>Rol</th><th>Email</th><th>Contraseña</th><th>Notas</th></tr>
+  <tr><td>ADMIN</td><td>admin@medicheck.com</td><td>Admin2024!</td><td>Acceso total al panel de administración</td></tr>
+  <tr><td>MEDICO</td><td>medico@medicheck.com</td><td>Medico2024!</td><td>Médico de prueba con perfil pre-cargado</td></tr>
+  <tr><td>PACIENTE</td><td>paciente@medicheck.com</td><td>Paciente2024!</td><td>Paciente base de pruebas</td></tr>
+  <tr><td>PACIENTE ×20</td><td>paciente1..20@test.com</td><td>Paciente2024!</td><td>Usuarios de prueba para paginación y mapa</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<!-- SECCIÓN 17 -->
+<h1 id="s14">17. Estructura del Proyecto</h1>
+<pre>
+medicheck/
+├── README.md
+├── docs/
+│   ├── documento.html          ← Este archivo
+│   └── presentacion.html       ← Presentación interactiva
+│
+├── backend/
+│   ├── pom.xml
+│   └── src/main/
+│       ├── java/com/medicheck/backend/
+│       │   ├── config/
+│       │   │   ├── AppConfig.java           ← Beans globales
+│       │   │   ├── DataSeeder.java          ← Datos de prueba
+│       │   │   ├── GlobalExceptionHandler   ← Manejo de errores HTTP
+│       │   │   ├── JwtFilter.java           ← Filtro JWT por request
+│       │   │   ├── JwtUtil.java             ← Generar/validar tokens
+│       │   │   └── SecurityConfig.java      ← Security + CORS
+│       │   ├── controller/                  ← 9 controladores REST
+│       │   ├── dto/                         ← 6 DTOs de entrada/salida
+│       │   ├── model/                       ← 8 entidades JPA + 3 enums
+│       │   ├── repository/                  ← 6 repositorios JPA
+│       │   └── service/                     ← 5 servicios de negocio
+│       └── resources/
+│           └── application.properties
+│
+└── frontend/
+    ├── .env                    ← VITE_API_URL
+    ├── package.json
+    └── src/
+        ├── api/                ← axios.js + auth.js
+        ├── router/index.js     ← Rutas + guardas de auth y perfil
+        ├── components/         ← Sidebar.vue, ConsultaCard.vue
+        └── views/              ← 14 vistas Vue
+</pre>
+
+<div class="footer-bar">
+  MediCheck IA — Documento Técnico de Proyecto &nbsp;·&nbsp; 2025
+</div>
+
+</div><!-- /padding -->
+</body>
+</html>

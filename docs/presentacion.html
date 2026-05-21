@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MediCheck IA — Presentación Interactiva</title>
+<style>
+:root{
+  --accent:#00d4aa;--accent2:#0099ff;--accent3:#c864ff;
+  --bg:#070d14;--surface:#111820;--surface2:#1a2535;--surface3:#0d1e2b;
+  --border:rgba(255,255,255,.06);--border2:rgba(0,212,170,.2);
+  --text:#e8f0f8;--muted:#7a8fa6;--muted2:#4a5f72;
+  --grave:#ff4444;--moderado:#ffaa00;--leve:#00d4aa;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;overflow-x:hidden;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(7,13,20,.9);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem 2rem;}
+.nav-logo{display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:1.1rem;}
+.nav-logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;}
+.nav-logo span{color:var(--accent);}
+.nav-links{display:flex;gap:.25rem;}
+.nav-link{padding:.4rem .85rem;border-radius:8px;color:var(--muted);font-size:.82rem;
+  text-decoration:none;cursor:pointer;transition:all .2s;border:none;background:none;}
+.nav-link:hover,.nav-link.active{background:rgba(0,212,170,.1);color:var(--accent);}
+.nav-prog{height:2px;position:fixed;top:52px;left:0;background:var(--accent);transition:width .1s;z-index:1001;}
+
+/* ── SECTIONS ── */
+section{min-height:100vh;display:flex;align-items:center;justify-content:center;
+  padding:5rem 2rem 3rem;position:relative;}
+.section-inner{max-width:1100px;width:100%;}
+.section-tag{font-size:.7rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}
+.section-tag::before{content:'';width:24px;height:2px;background:var(--accent);}
+.section-title{font-size:2.8rem;font-weight:800;line-height:1.1;margin-bottom:1rem;}
+.section-title span{color:var(--accent);}
+.section-sub{font-size:1rem;color:var(--muted);line-height:1.7;max-width:600px;}
+
+/* ── HERO ── */
+#hero{overflow:hidden;}
+.hero-particles{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.particle{position:absolute;border-radius:50%;animation:float linear infinite;opacity:.4;}
+@keyframes float{0%{transform:translateY(100vh) rotate(0deg);opacity:0;}
+  10%{opacity:.4;} 90%{opacity:.4;} 100%{transform:translateY(-100px) rotate(720deg);opacity:0;}}
+.hero-grid{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(0,212,170,.03) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,212,170,.03) 1px,transparent 1px);
+  background-size:60px 60px;}
+.hero-content{position:relative;z-index:2;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(0,212,170,.1);border:1px solid rgba(0,212,170,.25);
+  padding:.4rem 1rem;border-radius:20px;font-size:.8rem;color:var(--accent);
+  margin-bottom:2rem;animation:fadeDown .6s ease both;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:none;}}
+.hero-title{font-size:clamp(2.5rem,7vw,5.5rem);font-weight:800;line-height:1.05;
+  animation:fadeUp .7s .1s ease both;}
+.hero-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;}}
+.hero-sub{font-size:1.15rem;color:var(--muted);max-width:600px;margin:1.25rem auto 2.5rem;
+  line-height:1.7;animation:fadeUp .7s .2s ease both;}
+.hero-btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;
+  animation:fadeUp .7s .3s ease both;}
+.btn-primary{padding:.75rem 1.75rem;background:var(--accent);color:#000;
+  border:none;border-radius:10px;font-weight:700;font-size:.9rem;cursor:pointer;
+  transition:all .2s;text-decoration:none;}
+.btn-primary:hover{background:#00b896;transform:translateY(-2px);box-shadow:0 8px 25px rgba(0,212,170,.35);}
+.btn-ghost{padding:.75rem 1.75rem;background:none;color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;font-weight:600;font-size:.9rem;
+  cursor:pointer;transition:all .2s;text-decoration:none;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.hero-stats{display:flex;gap:2.5rem;justify-content:center;margin-top:4rem;flex-wrap:wrap;
+  animation:fadeUp .7s .5s ease both;}
+.hero-stat{text-align:center;}
+.hero-stat-num{font-size:2.2rem;font-weight:800;color:var(--accent);}
+.hero-stat-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;}
+
+/* ── CARDS ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;margin-top:2.5rem;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.5rem;transition:all .25s;cursor:default;}
+.card:hover{border-color:var(--border2);transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,212,170,.1);}
+.card-icon{font-size:2rem;margin-bottom:1rem;}
+.card-title{font-weight:700;font-size:1rem;margin-bottom:.5rem;}
+.card-desc{font-size:.83rem;color:var(--muted);line-height:1.6;}
+.card-badge{margin-top:.85rem;display:inline-block;font-size:.7rem;font-weight:700;
+  padding:.2rem .65rem;border-radius:20px;background:rgba(0,212,170,.1);color:var(--accent);}
+
+/* ── ARCHITECTURE ── */
+#arquitectura{background:radial-gradient(ellipse at center,rgba(0,212,170,.04) 0%,transparent 70%);}
+.arch-diagram{margin-top:2.5rem;position:relative;}
+.arch-layer{background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  padding:1.25rem 1.5rem;margin-bottom:.75rem;cursor:pointer;transition:all .3s;}
+.arch-layer:hover,.arch-layer.open{border-color:var(--accent);background:var(--surface2);}
+.arch-layer-header{display:flex;align-items:center;justify-content:space-between;}
+.arch-layer-title{font-weight:700;font-size:.95rem;display:flex;align-items:center;gap:.75rem;}
+.arch-layer-port{font-size:.72rem;background:rgba(0,212,170,.1);color:var(--accent);
+  padding:.15rem .6rem;border-radius:10px;}
+.arch-arrow{font-size:.8rem;color:var(--muted);transition:transform .3s;}
+.arch-layer.open .arch-arrow{transform:rotate(90deg);}
+.arch-detail{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border);}
+.arch-layer.open .arch-detail{display:block;}
+.arch-tech-grid{display:flex;flex-wrap:wrap;gap:.5rem;}
+.arch-tech{background:var(--surface3);border:1px solid var(--border);border-radius:8px;
+  padding:.35rem .75rem;font-size:.78rem;color:var(--text);}
+.arch-connector{display:flex;align-items:center;gap:.5rem;padding:.3rem 1.5rem;
+  color:var(--muted);font-size:.78rem;}
+.arch-connector::before,.arch-connector::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── FLUJOS ── */
+.tab-btns{display:flex;gap:.5rem;margin-bottom:2rem;background:var(--surface);
+  border-radius:12px;padding:.35rem;border:1px solid var(--border);}
+.tab-btn{flex:1;padding:.6rem;border:none;border-radius:9px;background:none;
+  color:var(--muted);font-size:.88rem;font-weight:600;cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:var(--surface2);color:var(--accent);
+  box-shadow:0 0 15px rgba(0,212,170,.15);}
+.tab-panel{display:none;} .tab-panel.active{display:block;}
+.flow-steps{display:flex;flex-direction:column;gap:0;}
+.flow-step{display:flex;gap:1.25rem;padding:1.25rem 0;border-left:2px solid var(--border);
+  padding-left:1.5rem;margin-left:1rem;position:relative;cursor:pointer;
+  transition:all .2s;}
+.flow-step:last-child{border-left-color:transparent;}
+.flow-step::before{content:attr(data-num);position:absolute;left:-1.1rem;top:1.2rem;
+  width:2.2rem;height:2.2rem;background:var(--surface);border:2px solid var(--border2);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.8rem;color:var(--accent);transition:all .2s;}
+.flow-step:hover::before,.flow-step.active::before{background:var(--accent);color:#000;border-color:var(--accent);}
+.flow-step.active{border-left-color:var(--accent);}
+.flow-step-content{flex:1;}
+.flow-step-title{font-weight:700;font-size:.95rem;margin-bottom:.3rem;}
+.flow-step-desc{font-size:.83rem;color:var(--muted);line-height:1.6;}
+.flow-step-detail{display:none;margin-top:.75rem;background:var(--surface2);
+  border-radius:8px;padding:.85rem 1rem;font-size:.82rem;color:var(--text);
+  border-left:3px solid var(--accent);}
+.flow-step.active .flow-step-detail{display:block;}
+.flow-step-badge{display:inline-block;font-size:.7rem;font-weight:700;padding:.15rem .6rem;
+  border-radius:20px;margin-right:.4rem;}
+.badge-grave{background:rgba(255,68,68,.15);color:var(--grave);}
+.badge-mod{background:rgba(255,170,0,.15);color:var(--moderado);}
+.badge-leve{background:rgba(0,212,170,.15);color:var(--leve);}
+.badge-rol{background:rgba(0,153,255,.15);color:var(--accent2);}
+
+/* ── API REFERENCE ── */
+.api-filter{display:flex;gap:.75rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center;}
+.api-search{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border2);
+  border-radius:10px;padding:.65rem 1rem;color:var(--text);font-size:.88rem;outline:none;}
+.api-search:focus{border-color:var(--accent);}
+.method-filter{display:flex;gap:.4rem;}
+.mf-btn{padding:.4rem .85rem;border:1px solid var(--border);border-radius:20px;
+  background:none;color:var(--muted);font-size:.75rem;font-weight:700;cursor:pointer;transition:all .2s;}
+.mf-btn.active-get{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.1);}
+.mf-btn.active-post{border-color:#3b82f6;color:#3b82f6;background:rgba(59,130,246,.1);}
+.mf-btn.active-put{border-color:#f59e0b;color:#f59e0b;background:rgba(245,158,11,.1);}
+.mf-btn.active-del{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,.1);}
+.api-group{margin-bottom:1.25rem;}
+.api-group-title{font-size:.75rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted2);padding:.5rem 0;border-bottom:1px solid var(--border);margin-bottom:.5rem;}
+.api-item{display:flex;align-items:center;gap:.85rem;padding:.75rem 1rem;
+  background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  margin-bottom:.4rem;cursor:pointer;transition:all .2s;}
+.api-item:hover{border-color:var(--border2);background:var(--surface2);}
+.api-item.hidden{display:none;}
+.api-method{font-size:.72rem;font-weight:800;width:44px;text-align:center;
+  padding:.2rem .4rem;border-radius:6px;flex-shrink:0;}
+.m-get{background:#dcfce7;color:#166534;}
+.m-post{background:#dbeafe;color:#1e40af;}
+.m-put{background:#fef3c7;color:#92400e;}
+.m-del{background:#fee2e2;color:#991b1b;}
+.api-path{font-family:Consolas,monospace;font-size:.85rem;color:var(--text);flex:1;}
+.api-path span{color:var(--accent);}
+.api-desc{font-size:.78rem;color:var(--muted);margin-left:auto;max-width:280px;text-align:right;}
+.api-auth{font-size:.68rem;padding:.12rem .5rem;border-radius:10px;flex-shrink:0;}
+.auth-none{background:rgba(255,255,255,.06);color:var(--muted);}
+.auth-any{background:rgba(0,212,170,.1);color:var(--accent);}
+.auth-admin{background:rgba(200,100,255,.12);color:#c864ff;}
+.auth-pac{background:rgba(0,153,255,.12);color:var(--accent2);}
+.auth-med{background:rgba(0,212,170,.12);color:var(--accent);}
+
+/* ── DATABASE ── */
+.db-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin-top:2rem;}
+.db-table{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;transition:all .25s;cursor:pointer;}
+.db-table:hover{border-color:var(--border2);transform:translateY(-3px);
+  box-shadow:0 8px 30px rgba(0,212,170,.1);}
+.db-table-head{background:var(--surface3);padding:.7rem 1rem;
+  font-weight:700;font-size:.82rem;color:var(--accent);
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:.5rem;}
+.db-table-rows{padding:.35rem 0;}
+.db-row{padding:.3rem 1rem;font-size:.78rem;display:flex;align-items:center;gap:.5rem;}
+.db-pk{color:#f59e0b;font-size:.68rem;font-weight:800;min-width:20px;}
+.db-fk{color:#3b82f6;font-size:.68rem;font-weight:800;min-width:20px;}
+.db-col-name{color:var(--text);}
+.db-col-type{margin-left:auto;color:var(--muted2);font-size:.72rem;}
+.db-more{padding:.35rem 1rem;font-size:.73rem;color:var(--accent);cursor:pointer;
+  border-top:1px solid var(--border);text-align:center;}
+
+/* ── TECH STACK ── */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:1rem;margin-top:2rem;}
+.tech-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:1.25rem;text-align:center;transition:all .25s;}
+.tech-card:hover{border-color:var(--border2);transform:translateY(-3px);}
+.tech-icon{font-size:2rem;margin-bottom:.6rem;}
+.tech-name{font-weight:700;font-size:.9rem;margin-bottom:.25rem;}
+.tech-ver{font-size:.72rem;color:var(--accent);}
+.tech-use{font-size:.75rem;color:var(--muted);margin-top:.35rem;line-height:1.5;}
+
+/* ── ROLES ── */
+.roles-matrix{margin-top:2rem;overflow-x:auto;}
+.matrix-table{width:100%;border-collapse:collapse;}
+.matrix-table th,.matrix-table td{padding:.65rem 1rem;text-align:center;
+  border-bottom:1px solid var(--border);font-size:.83rem;}
+.matrix-table th{background:var(--surface3);font-size:.72rem;font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--muted);}
+.matrix-table td:first-child{text-align:left;font-family:Consolas,monospace;font-size:.8rem;color:var(--accent);}
+.matrix-table tr:hover td{background:var(--surface);}
+.check{color:#22c55e;font-size:1.1rem;}
+.cross{color:var(--border2);font-size:1rem;}
+
+/* ── SETUP ── */
+.setup-steps{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-top:2rem;}
+.setup-step{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;}
+.setup-num{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.85rem;color:#000;margin-bottom:1rem;}
+.setup-title{font-weight:700;margin-bottom:.5rem;}
+.setup-desc{font-size:.82rem;color:var(--muted);margin-bottom:.85rem;line-height:1.6;}
+pre.code-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;
+  padding:.85rem 1rem;font-family:Consolas,monospace;font-size:.8rem;color:#e2e8f0;
+  overflow-x:auto;line-height:1.6;}
+pre.code-block .kw{color:var(--accent);}
+pre.code-block .cm{color:var(--muted2);}
+pre.code-block .st{color:#f9a8d4;}
+
+/* ── USERS SEEDER ── */
+.users-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:2rem;}
+.user-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem;
+  transition:all .25s;}
+.user-card:hover{border-color:var(--border2);}
+.user-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-weight:800;font-size:1.2rem;margin-bottom:.85rem;}
+.ua-admin{background:linear-gradient(135deg,#c864ff,#7928ca);}
+.ua-medico{background:linear-gradient(135deg,var(--accent),var(--accent2));}
+.ua-paciente{background:linear-gradient(135deg,var(--accent2),#4fa3ff);}
+.user-name{font-weight:700;margin-bottom:.25rem;}
+.user-email{font-size:.78rem;color:var(--muted);font-family:Consolas,monospace;}
+.user-pass{font-size:.75rem;background:var(--surface2);padding:.3rem .65rem;
+  border-radius:6px;margin-top:.5rem;display:inline-block;color:var(--accent);}
+
+/* ── FOOTER ── */
+footer{background:var(--surface);border-top:1px solid var(--border);
+  padding:3rem 2rem;text-align:center;}
+.footer-logo{font-size:1.5rem;font-weight:800;margin-bottom:.5rem;}
+.footer-logo span{color:var(--accent);}
+.footer-sub{color:var(--muted);font-size:.85rem;}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(30px);transition:all .6s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* ── ANIMATIONS ── */
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
+.pulse{animation:pulse 2s infinite;}
+
+/* ── TOOLTIP ── */
+.tooltip{position:relative;}
+.tooltip-text{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;
+  transform:translateX(-50%);background:var(--surface2);color:var(--text);
+  font-size:.75rem;padding:.4rem .7rem;border-radius:6px;white-space:nowrap;
+  border:1px solid var(--border);z-index:100;}
+.tooltip:hover .tooltip-text{display:block;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .nav-links{display:none;}
+  .setup-steps{grid-template-columns:1fr;}
+  .users-grid{grid-template-columns:1fr;}
+  .hero-title{font-size:2.5rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="nav-prog" id="navProg"></div>
+
+<!-- Navigation -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">🩺</div>
+    Medi<span>Check</span> IA
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" onclick="scrollTo('hero')">Inicio</a>
+    <a class="nav-link" onclick="scrollTo('funcionalidades')">Features</a>
+    <a class="nav-link" onclick="scrollTo('arquitectura')">Arquitectura</a>
+    <a class="nav-link" onclick="scrollTo('flujos')">Flujos</a>
+    <a class="nav-link" onclick="scrollTo('api')">API</a>
+    <a class="nav-link" onclick="scrollTo('base-datos')">Base de datos</a>
+    <a class="nav-link" onclick="scrollTo('stack')">Stack</a>
+    <a class="nav-link" onclick="scrollTo('setup')">Instalación</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════ HERO -->
+<section id="hero">
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content section-inner" style="text-align:center">
+    <div class="hero-badge">🧬 Plataforma de Salud Digital con Inteligencia Artificial</div>
+    <h1 class="hero-title">Medi<span>Check</span> IA</h1>
+    <p class="hero-sub">
+      Sistema completo de gestión médica con análisis de síntomas por IA, verificación
+      documental de médicos, asignación geográfica y panel de administración centralizado.
+    </p>
+    <div class="hero-btns">
+      <a class="btn-primary" onclick="scrollTo('funcionalidades')">Explorar funcionalidades →</a>
+      <a class="btn-ghost" onclick="scrollTo('setup')">⚡ Cómo ejecutar</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num count" data-target="14">0</div><div class="hero-stat-lbl">Vistas Vue</div></div>
+      <div class="hero-stat"><div class="hero-stat-num count" data-target="11">0</div><div class="hero-stat-lbl">Endpoints API</div></div>
+      <div class="hero-stat"><div class="hero-stat-num count" data-target="3">0</div><div class="hero-stat-lbl">Roles de usuario</div></div>
+      <div class="hero-stat"><div class="hero-stat-num count" data-target="6">0</div><div class="hero-stat-lbl">Tablas BD</div></div>
+      <div class="hero-stat"><div class="hero-stat-num count" data-target="21">0</div><div class="hero-stat-lbl">Endpoints totales</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ FUNCIONALIDADES -->
+<section id="funcionalidades">
+  <div class="section-inner reveal">
+    <div class="section-tag">Módulos del sistema</div>
+    <h2 class="section-title">¿Qué hace <span>MediCheck IA</span>?</h2>
+    <p class="section-sub">Cada módulo resuelve una necesidad específica del ecosistema de salud digital.</p>
+    <div class="cards-grid" style="margin-top:2.5rem">
+      <div class="card"><div class="card-icon">🧬</div><div class="card-title">Análisis de síntomas con IA</div><div class="card-desc">El paciente describe sus síntomas en texto libre y el sistema los analiza con Ollama (llama3.2:3b) para clasificarlos en LEVE, MODERADO o GRAVE con recomendación personalizada.</div><span class="card-badge">Ollama + llama3.2</span></div>
+      <div class="card"><div class="card-icon">📋</div><div class="card-title">Registro y perfil de paciente</div><div class="card-desc">Formulario guiado de 4 pasos: datos personales, información médica (alergias, medicamentos, grupo sanguíneo), contacto de emergencia y preferencias de atención.</div><span class="card-badge">Vue 3 multi-paso</span></div>
+      <div class="card"><div class="card-icon">👨‍⚕️</div><div class="card-title">Registro y perfil médico</div><div class="card-desc">Proceso de 3 pasos: datos personales, datos profesionales (licencia, RETHUS, universidad) y carga de documentos obligatorios para verificación.</div><span class="card-badge">Multipart upload</span></div>
+      <div class="card"><div class="card-icon">✅</div><div class="card-title">Verificación documental</div><div class="card-desc">El administrador puede ver, revisar y aprobar cada documento subido por el médico. Los documentos se sirven de forma segura con autenticación JWT via axios blob.</div><span class="card-badge">Spring Security</span></div>
+      <div class="card"><div class="card-icon">🗺️</div><div class="card-title">Asignación geográfica</div><div class="card-desc">El admin visualiza pacientes y médicos en un mapa interactivo. Al seleccionar un paciente, ve los médicos ordenados por proximidad usando la fórmula de Haversine.</div><span class="card-badge">Leaflet + Haversine</span></div>
+      <div class="card"><div class="card-icon">📧</div><div class="card-title">Alertas automáticas</div><div class="card-desc">Si un paciente registra una consulta con nivel GRAVE o MODERADO y tiene médico asignado, el sistema envía automáticamente un email de alerta al médico.</div><span class="card-badge">Gmail SMTP</span></div>
+      <div class="card"><div class="card-icon">🪪</div><div class="card-title">Vista perfil CV</div><div class="card-desc">Cada usuario puede ver su perfil en formato hoja de vida. El administrador puede ver el CV de cualquier usuario desde la tabla de usuarios paginada.</div><span class="card-badge">Solo lectura</span></div>
+      <div class="card"><div class="card-icon">👥</div><div class="card-title">Gestión de usuarios</div><div class="card-desc">Vista paginada (20/página) con filtros por nombre, rol, ciudad y estado de validación. Mantiene posición en la paginación al volver desde el perfil.</div><span class="card-badge">JPA Specification</span></div>
+      <div class="card"><div class="card-icon">🔐</div><div class="card-title">Seguridad por roles</div><div class="card-desc">Autenticación JWT con expiración de 24h. Tres roles independientes (PACIENTE, MÉDICO, ADMIN) con endpoints completamente separados. Perfil incompleto bloquea el acceso.</div><span class="card-badge">JWT + RBAC</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ ARQUITECTURA -->
+<section id="arquitectura" style="background:radial-gradient(ellipse at 60% 50%,rgba(0,212,170,.04) 0%,transparent 70%)">
+  <div class="section-inner reveal">
+    <div class="section-tag">Diseño del sistema</div>
+    <h2 class="section-title">Arquitectura <span>por capas</span></h2>
+    <p class="section-sub">Haz clic en cada capa para ver los componentes que la conforman.</p>
+    <div class="arch-diagram" style="margin-top:2.5rem">
+
+      <div class="arch-layer" onclick="toggleLayer(this)">
+        <div class="arch-layer-header">
+          <div class="arch-layer-title">
+            🌐 <span>Capa de Presentación</span>
+            <span class="arch-layer-port">:5173</span>
+          </div>
+          <span class="arch-arrow">▶</span>
+        </div>
+        <div class="arch-detail">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">
+            SPA construida con Vue 3 + Vite. No hay rendering server-side. La app se comunica
+            exclusivamente via REST con el backend. El enrutamiento y la autenticación se gestionan
+            completamente en el cliente.
+          </p>
+          <div class="arch-tech-grid">
+            <span class="arch-tech">Vue 3 Composition API</span>
+            <span class="arch-tech">Vue Router 4 (guardas)</span>
+            <span class="arch-tech">Axios (interceptores JWT)</span>
+            <span class="arch-tech">Leaflet / OpenStreetMap</span>
+            <span class="arch-tech">14 vistas / 2 componentes</span>
+            <span class="arch-tech">localStorage (mc_token, mc_rol, mc_perfil_ok)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">↕ HTTP / REST + JSON — Authorization: Bearer token</div>
+
+      <div class="arch-layer" onclick="toggleLayer(this)">
+        <div class="arch-layer-header">
+          <div class="arch-layer-title">
+            ⚙️ <span>Capa de Negocio</span>
+            <span class="arch-layer-port">:8080</span>
+          </div>
+          <span class="arch-arrow">▶</span>
+        </div>
+        <div class="arch-detail">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">
+            API REST con Spring Boot 3. Cada request pasa por el <code>JwtFilter</code> que extrae
+            el email del token y carga el <code>UserDetails</code>. Los controllers delegan la lógica
+            a los services. La capa de repositorio usa JPA + Specification para filtros dinámicos.
+          </p>
+          <div class="arch-tech-grid">
+            <span class="arch-tech">Spring Boot 3.5 + Java 17</span>
+            <span class="arch-tech">Spring Security 6 + JWT</span>
+            <span class="arch-tech">9 Controllers REST</span>
+            <span class="arch-tech">5 Services de negocio</span>
+            <span class="arch-tech">6 Repositories JPA</span>
+            <span class="arch-tech">JPA Specification (filtros)</span>
+            <span class="arch-tech">Lombok @RequiredArgsConstructor</span>
+            <span class="arch-tech">GlobalExceptionHandler</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">↕ JDBC / Hibernate ORM + SQL</div>
+
+      <div class="arch-layer" onclick="toggleLayer(this)">
+        <div class="arch-layer-header">
+          <div class="arch-layer-title">
+            🗄️ <span>Capa de Datos</span>
+            <span class="arch-layer-port">:5432</span>
+          </div>
+          <span class="arch-arrow">▶</span>
+        </div>
+        <div class="arch-detail">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">
+            PostgreSQL 15. Hibernate gestiona el esquema con <code>ddl-auto=update</code>.
+            El <code>DataSeeder</code> corrige roles y constraints con JdbcTemplate en cada arranque.
+          </p>
+          <div class="arch-tech-grid">
+            <span class="arch-tech">PostgreSQL 15+</span>
+            <span class="arch-tech">6 tablas principales</span>
+            <span class="arch-tech">Hibernate 6 (ddl-auto=update)</span>
+            <span class="arch-tech">JdbcTemplate (seeder/constraints)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="arch-connector">↕ HTTP REST | ↕ SMTP | ↕ Filesystem</div>
+
+      <div class="arch-layer" onclick="toggleLayer(this)">
+        <div class="arch-layer-header">
+          <div class="arch-layer-title">🔌 <span>Servicios Externos</span></div>
+          <span class="arch-arrow">▶</span>
+        </div>
+        <div class="arch-detail">
+          <div class="arch-tech-grid">
+            <span class="arch-tech">🤖 Ollama :11434 — LLM llama3.2:3b</span>
+            <span class="arch-tech">📧 Gmail SMTP :587 — Alertas médicas</span>
+            <span class="arch-tech">💾 ./uploads — Archivos de documentos</span>
+            <span class="arch-tech">🗺️ OpenStreetMap CDN — Tiles de mapa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ FLUJOS -->
+<section id="flujos">
+  <div class="section-inner reveal">
+    <div class="section-tag">Experiencia de usuario</div>
+    <h2 class="section-title">Flujos por <span>tipo de usuario</span></h2>
+    <p class="section-sub">Haz clic en cada paso para ver los detalles técnicos del flujo.</p>
+    <div class="tab-btns" style="margin-top:2rem">
+      <button class="tab-btn active" onclick="switchTab('paciente',this)">🙋 Paciente</button>
+      <button class="tab-btn" onclick="switchTab('medico',this)">👨‍⚕️ Médico</button>
+      <button class="tab-btn" onclick="switchTab('admin',this)">⚙️ Administrador</button>
+      <button class="tab-btn" onclick="switchTab('ia',this)">🧬 Consulta IA</button>
+    </div>
+
+    <!-- PACIENTE -->
+    <div class="tab-panel active" id="tab-paciente">
+      <div class="flow-steps">
+        <div class="flow-step" data-num="1" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Registro de cuenta</div>
+            <div class="flow-step-desc">El paciente crea su cuenta con nombre, email, contraseña y selecciona rol PACIENTE.</div>
+            <div class="flow-step-detail"><code>POST /api/auth/registro</code> → Retorna JWT + <code>perfilCompleto: false</code>.<br>El frontend guarda <code>mc_perfil_ok = "false"</code> y redirige a <code>/perfil-paciente</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="2" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Completar perfil (4 pasos)</div>
+            <div class="flow-step-desc">Datos personales → Info médica → Contacto emergencia → Preferencias. Hasta no completar todos los pasos, no se puede acceder al dashboard.</div>
+            <div class="flow-step-detail">Cada paso tiene validación individual. El botón <strong>"Finalizar"</strong> valida los 4 pasos completos antes de guardar.<br>Al terminar: <code>POST /api/paciente/perfil</code> → <code>mc_perfil_ok = "true"</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="3" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Dashboard y nueva consulta</div>
+            <div class="flow-step-desc">Accede al dashboard con estadísticas de sus consultas. Crea una nueva consulta describiendo sus síntomas.</div>
+            <div class="flow-step-detail"><code>POST /api/consultas</code> → El backend analiza con Ollama → Respuesta con nivel <span class="flow-step-badge badge-leve">LEVE</span> <span class="flow-step-badge badge-mod">MODERADO</span> o <span class="flow-step-badge badge-grave">GRAVE</span> + recomendación.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="4" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Historial y mapa GPS</div>
+            <div class="flow-step-desc">Consulta su historial completo. Comparte su ubicación GPS para que el médico pueda verla en el mapa.</div>
+            <div class="flow-step-detail"><code>GET /api/consultas/mis-consultas</code> para el historial.<br><code>POST /api/ubicacion</code> para compartir coordenadas.<br><code>GET /api/ubicacion/mi-medico</code> para ver dónde está su médico asignado.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MÉDICO -->
+    <div class="tab-panel" id="tab-medico">
+      <div class="flow-steps">
+        <div class="flow-step" data-num="1" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Registro como médico</div>
+            <div class="flow-step-desc">Crea cuenta seleccionando rol MÉDICO. Recibe JWT con perfilCompleto: false.</div>
+            <div class="flow-step-detail">Redirigido automáticamente a <code>/registro-medico</code>. El router bloquea cualquier otra ruta hasta completar el perfil.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="2" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Completar perfil (3 pasos)</div>
+            <div class="flow-step-desc">Datos personales → Datos profesionales (licencia, especialidad, universidad) → Subida de documentos obligatorios.</div>
+            <div class="flow-step-detail">Los documentos obligatorios son: Fotografía profesional, Doc. identidad (frontal/reverso), Diploma universitario, Tarjeta profesional.<br><code>POST /api/documentos/subir</code> (multipart/form-data).</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="3" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">En espera de verificación</div>
+            <div class="flow-step-desc">Estado PENDIENTE. El médico puede usar la plataforma pero sus documentos están en revisión por el administrador.</div>
+            <div class="flow-step-detail">El admin puede cambiar el estado a: <code>EN_REVISION</code> → <code>VERIFICADO</code> / <code>RECHAZADO</code> / <code>SUSPENDIDO</code>.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="4" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Panel médico activo</div>
+            <div class="flow-step-desc">Ve sus pacientes asignados, sus consultas recientes y recibe alertas por email ante casos graves.</div>
+            <div class="flow-step-detail"><code>GET /api/medico/mis-pacientes</code> · <code>GET /api/medico/consultas-pacientes</code><br>AlertaService envía email automático ante consultas GRAVE o MODERADO de sus pacientes.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="tab-panel" id="tab-admin">
+      <div class="flow-steps">
+        <div class="flow-step" data-num="1" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Panel de control</div>
+            <div class="flow-step-desc">Vista con estadísticas globales: total médicos, verificados, pendientes, en revisión y total pacientes.</div>
+            <div class="flow-step-detail"><code>GET /api/admin/estadisticas</code> → Contadores en tiempo real desde la base de datos.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="2" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Verificación de médicos</div>
+            <div class="flow-step-desc">Lista filtrable de médicos. Al hacer clic abre un modal con perfil + documentos. Puede ver cada documento y cambiar su estado.</div>
+            <div class="flow-step-detail">El botón "Ver" usa <code>axios { responseType: 'blob' }</code> para servir el archivo con JWT. Luego abre con <code>URL.createObjectURL()</code>.<br><code>PUT /api/admin/documentos/{id}/estado</code></div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="3" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Gestión de usuarios</div>
+            <div class="flow-step-desc">Tabla paginada (20/página) con filtros por nombre, rol, ciudad y estado. La página actual se persiste en la URL.</div>
+            <div class="flow-step-detail"><code>GET /api/admin/usuarios?pagina=0&nombre=&rol=&ciudad=&estado=</code><br>Usa JPA <code>Specification</code> con subquery para filtrar por ciudad/estado del perfil médico.<br>La URL se actualiza con <code>router.replace()</code> para preservar posición al volver.</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="4" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Asignación médico-paciente</div>
+            <div class="flow-step-desc">Mapa Leaflet con todos los pacientes (azul=con GPS, naranja=sin GPS) y médicos (verde). Selecciona un paciente y ve los médicos más cercanos ordenados por distancia.</div>
+            <div class="flow-step-detail">Fórmula Haversine para calcular distancia entre coordenadas GPS.<br><code>POST /api/admin/asignacion</code> · <code>DELETE /api/admin/asignacion/{pacienteId}</code></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IA -->
+    <div class="tab-panel" id="tab-ia">
+      <div class="flow-steps">
+        <div class="flow-step" data-num="1" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Paciente ingresa síntomas</div>
+            <div class="flow-step-desc">Describe en texto libre lo que siente. No hay formularios estructurados, el LLM interpreta el lenguaje natural.</div>
+            <div class="flow-step-detail">Ejemplo: <em>"Llevo 2 días con fiebre de 39°C, dolor de cabeza intenso y náuseas"</em></div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="2" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">OllamaService analiza</div>
+            <div class="flow-step-desc">Se envía el texto al modelo llama3.2:3b con un prompt estructurado que fuerza respuesta JSON.</div>
+            <div class="flow-step-detail">Prompt: "Responde EXACTAMENTE en formato JSON: {nivel: LEVE|MODERADO|GRAVE, recomendacion: texto}"<br>Endpoint: <code>POST http://localhost:11434/api/generate</code></div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="3" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Fallback si Ollama no está disponible</div>
+            <div class="flow-step-desc">Si el LLM falla, el sistema activa el analizador por palabras clave que clasifica con la misma lógica.</div>
+            <div class="flow-step-detail"><span class="flow-step-badge badge-grave">GRAVE</span> dolor de pecho, dificultad respiratoria, pérdida de consciencia<br><span class="flow-step-badge badge-mod">MODERADO</span> fiebre, vómitos, mareos, dolor abdominal<br><span class="flow-step-badge badge-leve">LEVE</span> todo lo demás</div>
+          </div>
+        </div>
+        <div class="flow-step" data-num="4" onclick="toggleStep(this)">
+          <div class="flow-step-content">
+            <div class="flow-step-title">Alerta automática al médico</div>
+            <div class="flow-step-desc">Si el nivel es GRAVE o MODERADO y el paciente tiene médico asignado, se dispara un email automático.</div>
+            <div class="flow-step-detail">AlertaService usa JavaMailSender con Gmail SMTP (puerto 587, STARTTLS).<br>El email incluye: nombre del paciente, nivel de gravedad, síntomas y recomendación del sistema.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ API -->
+<section id="api" style="background:radial-gradient(ellipse at 30% 50%,rgba(0,153,255,.04) 0%,transparent 70%)">
+  <div class="section-inner reveal">
+    <div class="section-tag">Referencia técnica</div>
+    <h2 class="section-title">API <span>REST</span></h2>
+    <p class="section-sub">Base URL: <code style="color:var(--accent)">http://localhost:8080/api</code></p>
+
+    <div class="api-filter" style="margin-top:2rem">
+      <input class="api-search" placeholder="🔍 Buscar endpoint..." oninput="filterApi(this.value)" id="apiSearch"/>
+      <div class="method-filter">
+        <button class="mf-btn" onclick="filterMethod('GET',this)">GET</button>
+        <button class="mf-btn" onclick="filterMethod('POST',this)">POST</button>
+        <button class="mf-btn" onclick="filterMethod('PUT',this)">PUT</button>
+        <button class="mf-btn" onclick="filterMethod('DELETE',this)">DELETE</button>
+      </div>
+    </div>
+
+    <div id="apiList">
+      <div class="api-group"><div class="api-group-title">🔑 Autenticación</div>
+        <div class="api-item" data-method="POST" data-path="/auth/login"><span class="api-method m-post">POST</span><span class="api-path">/auth/<span>login</span></span><span class="api-auth auth-none">Público</span><span class="api-desc">Login → JWT + perfilCompleto</span></div>
+        <div class="api-item" data-method="POST" data-path="/auth/registro"><span class="api-method m-post">POST</span><span class="api-path">/auth/<span>registro</span></span><span class="api-auth auth-none">Público</span><span class="api-desc">Crear cuenta</span></div>
+        <div class="api-item" data-method="GET" data-path="/auth/me"><span class="api-method m-get">GET</span><span class="api-path">/auth/<span>me</span></span><span class="api-auth auth-any">Auth</span><span class="api-desc">Usuario autenticado</span></div>
+      </div>
+      <div class="api-group"><div class="api-group-title">🧬 Consultas IA</div>
+        <div class="api-item" data-method="POST" data-path="/consultas"><span class="api-method m-post">POST</span><span class="api-path">/<span>consultas</span></span><span class="api-auth auth-pac">PACIENTE</span><span class="api-desc">Analizar síntomas con IA</span></div>
+        <div class="api-item" data-method="GET" data-path="/consultas/mis-consultas"><span class="api-method m-get">GET</span><span class="api-path">/<span>consultas/mis-consultas</span></span><span class="api-auth auth-pac">PACIENTE</span><span class="api-desc">Historial del paciente</span></div>
+      </div>
+      <div class="api-group"><div class="api-group-title">👨‍⚕️ Médico</div>
+        <div class="api-item" data-method="GET" data-path="/medico/perfil"><span class="api-method m-get">GET</span><span class="api-path">/medico/<span>perfil</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Obtener perfil profesional</span></div>
+        <div class="api-item" data-method="POST" data-path="/medico/perfil"><span class="api-method m-post">POST</span><span class="api-path">/medico/<span>perfil</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Crear/actualizar perfil</span></div>
+        <div class="api-item" data-method="GET" data-path="/medico/mis-pacientes"><span class="api-method m-get">GET</span><span class="api-path">/medico/<span>mis-pacientes</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Pacientes asignados</span></div>
+        <div class="api-item" data-method="GET" data-path="/medico/consultas-pacientes"><span class="api-method m-get">GET</span><span class="api-path">/medico/<span>consultas-pacientes</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Consultas de sus pacientes</span></div>
+        <div class="api-item" data-method="GET" data-path="/medico/pacientes-disponibles"><span class="api-method m-get">GET</span><span class="api-path">/medico/<span>pacientes-disponibles</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Pacientes sin médico</span></div>
+        <div class="api-item" data-method="POST" data-path="/medico/asignar-paciente"><span class="api-method m-post">POST</span><span class="api-path">/medico/<span>asignar-paciente/{id}</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Asignarse un paciente</span></div>
+      </div>
+      <div class="api-group"><div class="api-group-title">🙋 Paciente</div>
+        <div class="api-item" data-method="GET" data-path="/paciente/perfil"><span class="api-method m-get">GET</span><span class="api-path">/paciente/<span>perfil</span></span><span class="api-auth auth-pac">PACIENTE</span><span class="api-desc">Obtener perfil</span></div>
+        <div class="api-item" data-method="POST" data-path="/paciente/perfil"><span class="api-method m-post">POST</span><span class="api-path">/paciente/<span>perfil</span></span><span class="api-auth auth-pac">PACIENTE</span><span class="api-desc">Crear/actualizar perfil</span></div>
+      </div>
+      <div class="api-group"><div class="api-group-title">📄 Documentos</div>
+        <div class="api-item" data-method="GET" data-path="/documentos"><span class="api-method m-get">GET</span><span class="api-path">/<span>documentos</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Mis documentos</span></div>
+        <div class="api-item" data-method="POST" data-path="/documentos/subir"><span class="api-method m-post">POST</span><span class="api-path">/documentos/<span>subir</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">Subir documento (multipart)</span></div>
+        <div class="api-item" data-method="GET" data-path="/documentos/ver"><span class="api-method m-get">GET</span><span class="api-path">/documentos/<span>ver/{id}</span></span><span class="api-auth auth-any">Auth</span><span class="api-desc">Ver archivo binario</span></div>
+      </div>
+      <div class="api-group"><div class="api-group-title">📍 Ubicación GPS</div>
+        <div class="api-item" data-method="POST" data-path="/ubicacion"><span class="api-method m-post">POST</span><span class="api-path">/<span>ubicacion</span></span><span class="api-auth auth-any">Auth</span><span class="api-desc">Actualizar mi GPS</span></div>
+        <div class="api-item" data-method="GET" data-path="/ubicacion/mi-medico"><span class="api-method m-get">GET</span><span class="api-path">/ubicacion/<span>mi-medico</span></span><span class="api-auth auth-pac">PACIENTE</span><span class="api-desc">GPS del médico asignado</span></div>
+        <div class="api-item" data-method="GET" data-path="/ubicacion/mis-pacientes"><span class="api-method m-get">GET</span><span class="api-path">/ubicacion/<span>mis-pacientes</span></span><span class="api-auth auth-med">MEDICO</span><span class="api-desc">GPS de mis pacientes</span></div>
+      </div>
+      <div class="api-group"><div class="api-group-title">🔧 Admin</div>
+        <div class="api-item" data-method="GET" data-path="/admin/estadisticas"><span class="api-method m-get">GET</span><span class="api-path">/admin/<span>estadisticas</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Contadores globales</span></div>
+        <div class="api-item" data-method="GET" data-path="/admin/medicos"><span class="api-method m-get">GET</span><span class="api-path">/admin/<span>medicos</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Lista de médicos</span></div>
+        <div class="api-item" data-method="GET" data-path="/admin/medicos/id"><span class="api-method m-get">GET</span><span class="api-path">/admin/<span>medicos/{id}</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Detalle médico + documentos</span></div>
+        <div class="api-item" data-method="PUT" data-path="/admin/medicos/estado"><span class="api-method m-put">PUT</span><span class="api-path">/admin/<span>medicos/{id}/estado</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Cambiar estado validación</span></div>
+        <div class="api-item" data-method="PUT" data-path="/admin/documentos/estado"><span class="api-method m-put">PUT</span><span class="api-path">/admin/<span>documentos/{id}/estado</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Cambiar estado documento</span></div>
+        <div class="api-item" data-method="GET" data-path="/admin/usuarios"><span class="api-method m-get">GET</span><span class="api-path">/admin/<span>usuarios</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Usuarios paginados + filtros</span></div>
+        <div class="api-item" data-method="GET" data-path="/admin/perfil"><span class="api-method m-get">GET</span><span class="api-path">/admin/<span>perfil/{userId}</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Perfil completo de usuario</span></div>
+        <div class="api-item" data-method="GET" data-path="/admin/asignacion/mapa"><span class="api-method m-get">GET</span><span class="api-path">/admin/<span>asignacion/mapa</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Usuarios con GPS</span></div>
+        <div class="api-item" data-method="POST" data-path="/admin/asignacion"><span class="api-method m-post">POST</span><span class="api-path">/admin/<span>asignacion</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Asignar médico a paciente</span></div>
+        <div class="api-item" data-method="DELETE" data-path="/admin/asignacion"><span class="api-method m-del">DEL</span><span class="api-path">/admin/<span>asignacion/{pacienteId}</span></span><span class="api-auth auth-admin">ADMIN</span><span class="api-desc">Quitar asignación</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ BASE DE DATOS -->
+<section id="base-datos">
+  <div class="section-inner reveal">
+    <div class="section-tag">Persistencia</div>
+    <h2 class="section-title">Base de <span>datos</span></h2>
+    <p class="section-sub">6 tablas principales en PostgreSQL. Hibernate gestiona el esquema automáticamente. Haz clic en una tabla para ver todos sus campos.</p>
+    <div class="db-grid">
+      <div class="db-table" onclick="toggleDbTable(this)">
+        <div class="db-table-head">👤 usuarios</div>
+        <div class="db-table-rows">
+          <div class="db-row"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">BIGINT</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">nombre</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">email</span><span class="db-col-type">UNIQUE</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">password</span><span class="db-col-type">bcrypt</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">rol</span><span class="db-col-type">ENUM</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-fk">FK</span><span class="db-col-name">medico_id</span><span class="db-col-type">→ usuarios</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">fecha_registro</span><span class="db-col-type">TIMESTAMP</span></div>
+        </div>
+        <div class="db-more">▼ ver más campos</div>
+      </div>
+      <div class="db-table" onclick="toggleDbTable(this)">
+        <div class="db-table-head">💊 consultas</div>
+        <div class="db-table-rows">
+          <div class="db-row"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">BIGINT</span></div>
+          <div class="db-row"><span class="db-fk">FK</span><span class="db-col-name">usuario_id</span><span class="db-col-type">→ usuarios</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">sintomas</span><span class="db-col-type">VARCHAR(1000)</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">nivel</span><span class="db-col-type">LEVE/MOD/GRAVE</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">recomendacion</span><span class="db-col-type">VARCHAR(2000)</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">fecha_consulta</span><span class="db-col-type">TIMESTAMP</span></div>
+        </div>
+        <div class="db-more">▼ ver más campos</div>
+      </div>
+      <div class="db-table" onclick="toggleDbTable(this)">
+        <div class="db-table-head">🩺 perfiles_medico</div>
+        <div class="db-table-rows">
+          <div class="db-row"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">BIGINT</span></div>
+          <div class="db-row"><span class="db-fk">FK</span><span class="db-col-name">usuario_id</span><span class="db-col-type">UNIQUE</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">especialidad</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">numero_licencia</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">universidad</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">estado_validacion</span><span class="db-col-type">ENUM</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">atencion_presencial</span><span class="db-col-type">BOOLEAN</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">tarifa_consulta</span><span class="db-col-type">DOUBLE</span></div>
+        </div>
+        <div class="db-more">▼ ver más campos</div>
+      </div>
+      <div class="db-table" onclick="toggleDbTable(this)">
+        <div class="db-table-head">🙋 perfiles_paciente</div>
+        <div class="db-table-rows">
+          <div class="db-row"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">BIGINT</span></div>
+          <div class="db-row"><span class="db-fk">FK</span><span class="db-col-name">usuario_id</span><span class="db-col-type">UNIQUE</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">grupo_sanguineo</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">alergias</span><span class="db-col-type">TEXT</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">medicamentos_actuales</span><span class="db-col-type">TEXT</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">nombre_contacto_emergencia</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">modalidad_presencial</span><span class="db-col-type">BOOLEAN</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">ciudad_atencion</span><span class="db-col-type">VARCHAR</span></div>
+        </div>
+        <div class="db-more">▼ ver más campos</div>
+      </div>
+      <div class="db-table" onclick="toggleDbTable(this)">
+        <div class="db-table-head">📄 documentos_medicos</div>
+        <div class="db-table-rows">
+          <div class="db-row"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">BIGINT</span></div>
+          <div class="db-row"><span class="db-fk">FK</span><span class="db-col-name">usuario_id</span><span class="db-col-type">→ usuarios</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">tipo</span><span class="db-col-type">ENUM(11)</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">estado</span><span class="db-col-type">ENUM(5)</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">ruta_archivo</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">nombre_original</span><span class="db-col-type">VARCHAR</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">content_type</span><span class="db-col-type">VARCHAR</span></div>
+        </div>
+        <div class="db-more">▼ ver más campos</div>
+      </div>
+      <div class="db-table" onclick="toggleDbTable(this)">
+        <div class="db-table-head">📍 ubicaciones</div>
+        <div class="db-table-rows">
+          <div class="db-row"><span class="db-pk">PK</span><span class="db-col-name">id</span><span class="db-col-type">BIGINT</span></div>
+          <div class="db-row"><span class="db-fk">FK</span><span class="db-col-name">usuario_id</span><span class="db-col-type">UNIQUE</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">latitud</span><span class="db-col-type">DOUBLE</span></div>
+          <div class="db-row"><span class="db-pk"> </span><span class="db-col-name">longitud</span><span class="db-col-type">DOUBLE</span></div>
+          <div class="db-row" style="display:none" class="extra"><span class="db-pk"> </span><span class="db-col-name">actualizado</span><span class="db-col-type">TIMESTAMP</span></div>
+        </div>
+        <div class="db-more">▼ ver más campos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ STACK -->
+<section id="stack" style="background:radial-gradient(ellipse at 70% 30%,rgba(200,100,255,.04) 0%,transparent 60%)">
+  <div class="section-inner reveal">
+    <div class="section-tag">Tecnologías</div>
+    <h2 class="section-title">Stack <span>tecnológico</span></h2>
+    <p class="section-sub">Tecnologías modernas y probadas para un sistema robusto y escalable.</p>
+    <div class="tech-grid">
+      <div class="tech-card"><div class="tech-icon">☕</div><div class="tech-name">Java 17</div><div class="tech-ver">LTS</div><div class="tech-use">Lenguaje del backend. Records, pattern matching y mejoras en switch expressions.</div></div>
+      <div class="tech-card"><div class="tech-icon">🌱</div><div class="tech-name">Spring Boot</div><div class="tech-ver">3.5.x</div><div class="tech-use">Framework principal. REST API, Security, JPA, Mail, Validation en un solo ecosistema.</div></div>
+      <div class="tech-card"><div class="tech-icon">🔐</div><div class="tech-name">JWT (jjwt)</div><div class="tech-ver">0.11.5</div><div class="tech-use">Tokens HS256 con expiración de 24h. El email del usuario es el subject del claim.</div></div>
+      <div class="tech-card"><div class="tech-icon">🐘</div><div class="tech-name">PostgreSQL</div><div class="tech-ver">15+</div><div class="tech-use">Base de datos relacional robusta. Hibernate gestiona el DDL automáticamente.</div></div>
+      <div class="tech-card"><div class="tech-icon">💚</div><div class="tech-name">Vue 3</div><div class="tech-ver">3.4.x</div><div class="tech-use">SPA con Composition API y &lt;script setup&gt;. Reactivo, ligero y sin build adicional.</div></div>
+      <div class="tech-card"><div class="tech-icon">⚡</div><div class="tech-name">Vite</div><div class="tech-ver">5.x</div><div class="tech-use">Bundler ultrarrápido con hot-reload. Build optimizado con tree-shaking.</div></div>
+      <div class="tech-card"><div class="tech-icon">🌐</div><div class="tech-name">Axios</div><div class="tech-ver">1.x</div><div class="tech-use">Cliente HTTP con interceptores. Añade Bearer token automáticamente y maneja 401.</div></div>
+      <div class="tech-card"><div class="tech-icon">🗺️</div><div class="tech-name">Leaflet</div><div class="tech-ver">1.9.x</div><div class="tech-use">Mapas interactivos sobre OpenStreetMap. Marcadores, popups y capas personalizadas.</div></div>
+      <div class="tech-card"><div class="tech-icon">🤖</div><div class="tech-name">Ollama</div><div class="tech-ver">latest</div><div class="tech-use">Servidor de LLM local. Ejecuta llama3.2:3b para análisis de síntomas en lenguaje natural.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ ROLES -->
+<section id="roles">
+  <div class="section-inner reveal">
+    <div class="section-tag">Seguridad</div>
+    <h2 class="section-title">Roles y <span>permisos</span></h2>
+    <p class="section-sub">Control de acceso basado en roles (RBAC). Cada request pasa por Spring Security antes de llegar al controller.</p>
+    <div class="roles-matrix" style="margin-top:2rem">
+      <table class="matrix-table">
+        <thead><tr><th>Endpoint group</th><th>👤 PACIENTE</th><th>👨‍⚕️ MEDICO</th><th>⚙️ ADMIN</th></tr></thead>
+        <tbody>
+          <tr><td>/api/auth/**</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>/api/consultas/**</td><td class="check">✓</td><td class="cross">—</td><td class="check">✓</td></tr>
+          <tr><td>/api/paciente/**</td><td class="check">✓</td><td class="cross">—</td><td class="check">✓</td></tr>
+          <tr><td>/api/medico/**</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>/api/documentos/**</td><td class="cross">—</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>/api/ubicacion/**</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+          <tr><td>/api/admin/**</td><td class="cross">—</td><td class="cross">—</td><td class="check">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:1.5rem;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:1.25rem 1.5rem;">
+      <div style="font-weight:700;margin-bottom:.75rem;color:var(--accent)">🛡️ Guarda de perfil incompleto</div>
+      <p style="font-size:.85rem;color:var(--muted);line-height:1.7">
+        Si <code style="color:var(--accent)">mc_perfil_ok !== "true"</code> en localStorage, el router redirige automáticamente
+        al formulario de perfil correspondiente al rol. Solo se permiten las rutas
+        <code>/perfil-paciente</code>, <code>/registro-medico</code> y <code>/mi-perfil</code>.
+        Esta guarda opera en <code>router.beforeEach()</code> de Vue Router.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ SETUP -->
+<section id="setup" style="background:radial-gradient(ellipse at 50% 80%,rgba(0,212,170,.05) 0%,transparent 60%)">
+  <div class="section-inner reveal">
+    <div class="section-tag">Inicio rápido</div>
+    <h2 class="section-title">Cómo <span>ejecutar</span> el proyecto</h2>
+    <p class="section-sub">4 pasos para tener MediCheck IA corriendo en local.</p>
+    <div class="setup-steps">
+      <div class="setup-step">
+        <div class="setup-num">1</div>
+        <div class="setup-title">Base de datos PostgreSQL</div>
+        <div class="setup-desc">Crear la base de datos. Hibernate crea las tablas automáticamente al iniciar el backend.</div>
+        <pre class="code-block"><span class="cm">-- En psql o pgAdmin</span>
+<span class="kw">CREATE DATABASE</span> medicheck_db;</pre>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">2</div>
+        <div class="setup-title">Ollama (opcional)</div>
+        <div class="setup-desc">Descarga el modelo de IA. Si no está disponible, el sistema usa el analizador de fallback automáticamente.</div>
+        <pre class="code-block"><span class="kw">ollama pull</span> llama3.2:3b
+<span class="kw">ollama serve</span>  <span class="cm"># puerto 11434</span></pre>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">3</div>
+        <div class="setup-title">Iniciar el backend</div>
+        <div class="setup-desc">Spring Boot en puerto 8080. El DataSeeder crea los usuarios de prueba automáticamente.</div>
+        <pre class="code-block"><span class="kw">cd</span> medicheck/backend
+<span class="kw">.\mvnw</span> spring-boot:run  <span class="cm"># Windows</span>
+<span class="kw">./mvnw</span> spring-boot:run  <span class="cm"># Linux/Mac</span></pre>
+      </div>
+      <div class="setup-step">
+        <div class="setup-num">4</div>
+        <div class="setup-title">Iniciar el frontend</div>
+        <div class="setup-desc">Vue 3 + Vite en puerto 5173. Instala dependencias la primera vez.</div>
+        <pre class="code-block"><span class="kw">cd</span> medicheck/frontend
+<span class="kw">npm install</span>
+<span class="kw">npm run dev</span>  <span class="cm"># http://localhost:5173</span></pre>
+      </div>
+    </div>
+    <div style="margin-top:2rem;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:1.5rem">
+      <div style="font-weight:700;margin-bottom:1rem;font-size:1rem;">🧪 Usuarios de prueba</div>
+      <div class="users-grid">
+        <div class="user-card">
+          <div class="user-avatar ua-admin">A</div>
+          <div class="user-name">Administrador</div>
+          <div class="user-email">admin@medicheck.com</div>
+          <div class="user-pass">Admin2024!</div>
+        </div>
+        <div class="user-card">
+          <div class="user-avatar ua-medico">M</div>
+          <div class="user-name">Médico de prueba</div>
+          <div class="user-email">medico@medicheck.com</div>
+          <div class="user-pass">Medico2024!</div>
+        </div>
+        <div class="user-card">
+          <div class="user-avatar ua-paciente">P</div>
+          <div class="user-name">Paciente de prueba</div>
+          <div class="user-email">paciente@medicheck.com</div>
+          <div class="user-pass">Paciente2024!</div>
+        </div>
+      </div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:1rem">
+        + 20 pacientes adicionales: <code style="color:var(--accent)">paciente1@test.com</code> hasta <code style="color:var(--accent)">paciente20@test.com</code> — contraseña: <code style="color:var(--accent)">Paciente2024!</code>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════ FOOTER -->
+<footer>
+  <div class="footer-logo">Medi<span>Check</span> IA</div>
+  <p class="footer-sub">Plataforma de Salud Digital con Inteligencia Artificial · 2025</p>
+  <p class="footer-sub" style="margin-top:.35rem">Spring Boot 3.5 · Vue 3 · PostgreSQL · Ollama llama3.2</p>
+</footer>
+
+<script>
+// ── Partículas ────────────────────────────────────────────────────────────────
+(function(){
+  const c=document.getElementById('particles');
+  if(!c)return;
+  for(let i=0;i<25;i++){
+    const p=document.createElement('div');
+    p.className='particle';
+    const s=Math.random()*8+3;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;
+      background:hsl(${Math.random()>0.5?165:210},80%,60%);
+      animation-duration:${Math.random()*15+10}s;
+      animation-delay:-${Math.random()*20}s;`;
+    c.appendChild(p);
+  }
+})();
+
+// ── Progress bar ──────────────────────────────────────────────────────────────
+window.addEventListener('scroll',()=>{
+  const p=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+  document.getElementById('navProg').style.width=p+'%';
+  // active nav
+  document.querySelectorAll('section').forEach(s=>{
+    const r=s.getBoundingClientRect();
+    if(r.top<=100&&r.bottom>=100){
+      document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+    }
+  });
+});
+
+// ── Smooth scroll ─────────────────────────────────────────────────────────────
+function scrollTo(id){
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+}
+
+// ── Counters ──────────────────────────────────────────────────────────────────
+const counters=document.querySelectorAll('.count');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const el=e.target,target=+el.dataset.target,dur=1500,step=target/dur*16;
+      let cur=0;
+      const t=setInterval(()=>{
+        cur=Math.min(cur+step,target);
+        el.textContent=Math.floor(cur);
+        if(cur>=target)clearInterval(t);
+      },16);
+      obs.unobserve(el);
+    }
+  });
+},{threshold:0.5});
+counters.forEach(c=>obs.observe(c));
+
+// ── Reveal on scroll ─────────────────────────────────────────────────────────
+const revObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');revObs.unobserve(e.target);}});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
+
+// ── Architecture layers ───────────────────────────────────────────────────────
+function toggleLayer(el){el.classList.toggle('open');}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── Flow steps ────────────────────────────────────────────────────────────────
+function toggleStep(el){
+  el.classList.toggle('active');
+}
+
+// ── API filter ────────────────────────────────────────────────────────────────
+let activeMethod='';
+function filterApi(q){
+  const lq=q.toLowerCase();
+  document.querySelectorAll('.api-item').forEach(item=>{
+    const path=item.dataset.path||'';
+    const method=item.dataset.method||'';
+    const desc=item.querySelector('.api-desc')?.textContent.toLowerCase()||'';
+    const matchQ=!q||(path.toLowerCase().includes(lq)||desc.includes(lq));
+    const matchM=!activeMethod||method===activeMethod;
+    item.classList.toggle('hidden',!(matchQ&&matchM));
+  });
+}
+function filterMethod(m,btn){
+  if(activeMethod===m){activeMethod='';btn.className='mf-btn';}
+  else{
+    activeMethod=m;
+    document.querySelectorAll('.mf-btn').forEach(b=>b.className='mf-btn');
+    btn.className=`mf-btn active-${m.toLowerCase()}`;
+  }
+  filterApi(document.getElementById('apiSearch').value);
+}
+
+// ── DB tables ─────────────────────────────────────────────────────────────────
+function toggleDbTable(el){
+  const extras=el.querySelectorAll('.db-row.extra, [style*="display:none"]');
+  const more=el.querySelector('.db-more');
+  const isOpen=more?.textContent.includes('▲');
+  el.querySelectorAll('.db-row').forEach((row,i)=>{
+    if(i>=4){row.style.display=isOpen?'none':'flex';}
+  });
+  if(more)more.textContent=isOpen?'▼ ver más campos':'▲ ver menos';
+  el.style.borderColor=isOpen?'var(--border)':'var(--accent)';
+}
+</script>
+</body>
+</html>
