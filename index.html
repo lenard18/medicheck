@@ -25,35 +25,31 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/medicheck/icons/icon-512.png" />
 
     <!-- ── Apple / iOS ───────────────────────────────────────────── -->
-    <!-- Habilita el modo "app instalada" en iPhone y Android Chrome -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <!-- Barra de estado negra translúcida (respeta el notch) -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <!-- Nombre que aparece bajo el ícono en iPhone -->
     <meta name="apple-mobile-web-app-title" content="MediCheck" />
-    <!-- Ícono para la pantalla de inicio de iPhone -->
     <link rel="apple-touch-icon" href="/medicheck/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/medicheck/icons/icon-192.png" />
     <link rel="apple-touch-icon" sizes="512x512" href="/medicheck/icons/icon-512.png" />
 
-    <!-- ── Open Graph (cuando compartes el link en WhatsApp, etc.) ── -->
+    <!-- ── Open Graph ───────────────────────────────────────────── -->
     <meta property="og:type"        content="website" />
     <meta property="og:title"       content="MediCheck IA" />
     <meta property="og:description" content="Consultas médicas inteligentes, historial clínico y teleconsultas" />
-    <meta property="og:image"       content="/icons/icon-512.png" />
+    <meta property="og:image"       content="https://lenard18.github.io/medicheck/icons/icon-512.png" />
     <meta property="og:locale"      content="es_CO" />
 
     <!-- ── Twitter/X Card ────────────────────────────────────────── -->
     <meta name="twitter:card"  content="summary" />
     <meta name="twitter:title" content="MediCheck IA" />
-    <meta name="twitter:image" content="/icons/icon-512.png" />
+    <meta name="twitter:image" content="https://lenard18.github.io/medicheck/icons/icon-512.png" />
 
     <!-- ── Seguridad ─────────────────────────────────────────────── -->
     <meta name="referrer" content="strict-origin-when-cross-origin" />
 
-    <script type="module" crossorigin src="/medicheck/assets/index-WTpan7J6.js"></script>
-    <link rel="stylesheet" crossorigin href="/medicheck/assets/index-D30pCJDP.css">
+    <script type="module" crossorigin src="/medicheck/assets/index-CUP0XMyq.js"></script>
+    <link rel="stylesheet" crossorigin href="/medicheck/assets/index-BR6DjrHn.css">
   </head>
   <body>
     <div id="app"></div>
@@ -64,6 +60,17 @@
          - En localhost (desarrollo): lo desregistra para evitar
            que la caché rompa el hot-reload de Vite
     ═══════════════════════════════════════════════════════════ -->
+    <!-- SPA redirect restore (GitHub Pages 404 trick) -->
+    <script>
+      (function() {
+        var p = window.location.search.slice(1).split('&p=')[1];
+        if (p) {
+          var decoded = decodeURIComponent(p.replace(/~and~/g, '&'));
+          window.history.replaceState(null, null, '/' + decoded);
+        }
+      })();
+    </script>
+
     <script>
       if ('serviceWorker' in navigator) {
         if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -77,7 +84,7 @@
         } else {
           // PRODUCCIÓN: registrar SW
           window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            navigator.serviceWorker.register('/medicheck/sw.js', { scope: '/medicheck/' })
               .then(reg => {
                 console.log('[MediCheck] SW registrado:', reg.scope);
 
